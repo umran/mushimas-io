@@ -104,11 +104,11 @@ const getResults = async (model, query, sort, limit, paginatedField, paginate) =
   }
 }
 
-module.exports = async ({model, argsOptions}) => {
-  const { _options: options } = argsOptions
-  const args = deriveArgs(argsOptions)
+module.exports = async ({model, args}) => {
+  const { _options: options } = args
+  const derivedArgs = deriveArgs(args)
 
-  const { query, sort, limit, paginatedField, paginate } = constructParams(args, options)
+  const { query, sort, limit, paginatedField, paginate } = constructParams(derivedArgs, options)
 
   return await getResults(model, query, sort, limit, paginatedField, paginate)
 }
