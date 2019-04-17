@@ -1,3 +1,3 @@
 exports.cache = require('./src/cache')
 exports.database = require('./src/database')
-exports.search = require('./src/searchengine')
+exports.search = require('./src/search')
