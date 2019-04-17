@@ -1,103 +1,35 @@
-const find = require('../database/find')
+const { find } = require('../database')
+const { findIndex } = require('./utils')
 
 const DEFAULT_LIMIT = 20
+const DEFAULT_SORT_DIRECTION = 'desc'
+const DEFAULT_PAGINATED_FIELD = '_score'
+const FALLBACK_PAGINATED_FIELD = '_id'
+const DEFAULT_MATCH_FIELDS = []
+const DEFAULT_PAGINATE_VALUE = true
 
-const createBody = (query, options={}) => {
-  let _limit = DEFAULT_LIMIT
-  let _sortDirection = 'desc'
-  let _paginatedField = '_score'
-  let _matchFields = []
-  let _sort
+const inferSortDirection = sortDirection => sortDirection === -1 ? 'desc' : 'asc'
 
-  const { paginate, paginatedField, sortDirection, limit, cursor, matchFields } = options
+const inferSort = (field, direction) => {
+  let result = [{
+    [field]: direction
+  }]
 
-  if (sortDirection) {
-    _sortDirection = sortDirection === 1 ? 'asc' : 'desc'
-  }
-
-  if (limit) {
-    _limit = limit
-  }
-
-  if (paginatedField) {
-    _paginatedField = paginatedField
-  }
-
-  if (matchFields) {
-    _matchFields = matchFields
-  }
-
-  if (!paginatedField || paginatedField !== '_id') {
-    _sort = [
-      { [_paginatedField]: _sortDirection },
-      { _id: 'desc' }
-    ]
-  } else {
-    _sort = [
-      { [_paginatedField]: _sortDirection }
-    ]
-  }
-
-  let body = {
-    query: {
-      simple_query_string: {
-        query: query,
-        fields: _matchFields
+  if (field !== FALLBACK_PAGINATED_FIELD) {
+    result = [
+      ...result,
+      {
+        [FALLBACK_PAGINATED_FIELD]: DEFAULT_SORT_DIRECTION
       }
-    },
-    sort: _sort
+    ]
   }
 
-  if (cursor && (!paginatedField || paginatedField !== '_id')) {
-    body.search_after = cursor.split('_')
-  } else if (cursor) {
-    body.search_after = [cursor]
-  }
-
-  if (paginate !== false) {
-    body.size = _limit + 1
-  }
-
-  return body
-}
-
-const hydrateResults = async (model, results, options={}) => {
-  const { paginate, paginatedField, limit } = options
-  let _limit = limit || DEFAULT_LIMIT
-
-  if (!results.hits || !results.hits.hits || results.hits.hits.length === 0) {
-    return {
-      results: [],
-      cursor: null
-    }
-  }
-
-  let nextCursor
-  if (paginate !== false && results.hits.hits.length > _limit) {
-    results.hits.hits.pop()
-
-    const cursorElement = results.hits.hits[results.hits.hits.length - 1]
-
-    if (paginatedField && paginatedField === '_id') {
-      nextCursor = `${cursorElement['_id']}`
-    } else if (paginatedField) {
-      nextCursor = `${cursorElement['_source'][paginatedField]}_${cursorElement['_id']}`
-    } else {
-      nextCursor = `${cursorElement['_score']}_${cursorElement['_id']}`
-    }
-  }
-
-  let hydrated = await lookupIds(results.hits.hits.map(hit => hit._id), model)
-
-  return {
-    results: hydrated,
-    cursor: nextCursor
-  }
+  return result
 }
 
 const lookupIds = async (_ids, model) => {
 
-  let docs = await find(model, { _id: { $in: _ids }, _options: { paginate: false } })
+  const docs = await find(model, { _id: { $in: _ids }, _options: { paginate: false } })
 
   let sorted = []
   for (var i = 0; i < _ids.length; i++) {
@@ -113,14 +45,82 @@ const lookupIds = async (_ids, model) => {
   return sorted
 }
 
-const findIndex = (arr, lambda) => {
-  for (var i = 0; i < arr.length; i++) {
-    if (lambda(arr[i]) === true) {
-      return i
+const createBody = (query, options) => {
+  if (!options) {
+    return {
+      query: {
+        simple_query_string: {
+          query: query,
+          fields: DEFAULT_MATCH_FIELDS
+        }
+      },
+      sort: inferSort(DEFAULT_PAGINATED_FIELD, DEFAULT_SORT_DIRECTION)
     }
   }
 
-  return null
+  // destructure options
+  const { paginate, paginatedField, sortDirection, limit, cursor, matchFields } = options
+
+  // construct body according to search options
+  let body = {
+    sort: inferSort(paginatedField || DEFAULT_PAGINATED_FIELD,
+      sortDirection ? inferSortDirection(sortDirection) : DEFAULT_SORT_DIRECTION)
+  }
+  
+  if (cursor && (!paginatedField || paginatedField !== FALLBACK_PAGINATED_FIELD)) {
+    body = {
+      ...body,
+      search_after: cursor.split('_')
+    }
+  } else if (cursor) {
+    body = {
+      ...body,
+      search_after: [cursor]
+    }
+  }
+
+  if (paginate !== false) {
+    body = {
+      ...body,
+      size: (limit || DEFAULT_LIMIT) + 1
+    }
+  }
+
+  return body
+}
+
+const hydrateResults = async (model, results, options={}) => {
+  const { paginate, paginatedField, limit } = options
+  const _limit = limit || DEFAULT_LIMIT
+
+  if (!results.hits || !results.hits.hits || results.hits.hits.length === 0) {
+    return {
+      results: [],
+      cursor: null
+    }
+  }
+
+  let nextCursor
+  if (paginate !== false && results.hits.hits.length > _limit) {
+    results.hits.hits.pop()
+
+    const cursorElement = results.hits.hits[results.hits.hits.length - 1]
+
+    if (paginatedField && paginatedField === FALLBACK_PAGINATED_FIELD) {
+      nextCursor = `${cursorElement[FALLBACK_PAGINATED_FIELD]}`
+    } else if (paginatedField) {
+      nextCursor = `${cursorElement['_source'][paginatedField]}_${cursorElement[FALLBACK_PAGINATED_FIELD]}`
+    } else {
+      nextCursor = `${cursorElement['_score']}_${cursorElement[FALLBACK_PAGINATED_FIELD]}`
+    }
+  }
+
+  let hydrated = await lookupIds(results.hits.hits.map(hit => hit._id), model)
+
+  return {
+    results: hydrated,
+    cursor: nextCursor
+  }
 }
 
 module.exports = async ({modelKey, model, args, client}) => {
