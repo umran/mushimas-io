@@ -1,1 +1,1 @@
-const generateKey = require('./handlerUtils')
+const { generateKey } = require('./utils')
