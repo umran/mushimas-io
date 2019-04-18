@@ -50,7 +50,7 @@ const createBody = (query, options) => {
   if (!options) {
     return {
       query: {
-        simple_query_string: {
+        query_string: {
           query: query,
           fields: DEFAULT_MATCH_FIELDS
         }
@@ -65,9 +65,9 @@ const createBody = (query, options) => {
   // construct body according to search options
   let body = {
     query: {
-      simple_query_string: {
+      query_string: {
         query: query,
-        fields: DEFAULT_MATCH_FIELDS
+        fields: matchFields || DEFAULT_MATCH_FIELDS
       }
     },
     sort: inferSort(paginatedField || DEFAULT_PAGINATED_FIELD,
