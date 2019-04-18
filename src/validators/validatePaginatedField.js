@@ -1,4 +1,4 @@
-module.exports = (path, schema, schemas) => {
+module.exports = (path, schemaKey, schemas) => {
   const paginatedFieldPattern = /^[a-z]+(?:\.[a-z]+)*$/
   const terminalTypes = ['string', 'integer', 'float', 'date', 'boolean']
 
@@ -8,7 +8,7 @@ module.exports = (path, schema, schemas) => {
 
   const normalizedPath = path.split('.')
 
-  let currentSchema = schema
+  let currentSchema = schemas[schemaKey]
 
   for (let i=0; i<normalizedPath.length; i++) {
     let field = currentSchema.fields[normalizedPath[i]]
