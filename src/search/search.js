@@ -130,17 +130,17 @@ const hydrateResults = async (model, results, options={}) => {
   }
 }
 
-module.exports = async ({modelKey, model, args, schemas, client}) => {
+module.exports = async ({collection, model, args, schemas, client}) => {
   const { query, _options: options } = args
 
   // validate user submitted paginatedField
   if (options && options.paginatedField) {
-    validatePaginatedField(options.paginatedField, modelKey, schemas)
+    validatePaginatedField(options.paginatedField, collection, schemas)
   }
 
   let results = await client.search({
-    index: modelKey,
-    type: modelKey,
+    index: collection,
+    type: collection,
     body: createBody(query, options)
   })
 
