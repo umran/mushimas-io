@@ -1,7 +1,7 @@
 module.exports = async ({model, collection, ackTime, args}) => {
   let document = await model.create({
     ...args,
-    '@status': 'ARCHIVED',
+    '@state': 'ARCHIVED',
     '@lastModified': ackTime,
     '@lastCommitted': new Date(),
     '@collection': collection,

@@ -1,5 +1,6 @@
 const { find } = require('../database')
 const { findIndex } = require('./utils')
+const { validatePaginatedField } = require('../validators')
 
 const DEFAULT_LIMIT = 20
 const DEFAULT_SORT_DIRECTION = 'desc'
@@ -63,6 +64,12 @@ const createBody = (query, options) => {
 
   // construct body according to search options
   let body = {
+    query: {
+      simple_query_string: {
+        query: query,
+        fields: DEFAULT_MATCH_FIELDS
+      }
+    },
     sort: inferSort(paginatedField || DEFAULT_PAGINATED_FIELD,
       sortDirection ? inferSortDirection(sortDirection) : DEFAULT_SORT_DIRECTION)
   }
@@ -123,8 +130,13 @@ const hydrateResults = async (model, results, options={}) => {
   }
 }
 
-module.exports = async ({modelKey, model, args, client}) => {
+module.exports = async ({modelKey, model, args, schemas, client}) => {
   const { query, _options: options } = args
+
+  // validate user submitted paginatedField
+  if (options && options.paginatedField) {
+    validatePaginatedField(options.paginatedField, modelKey, schemas)
+  }
 
   let results = await client.search({
     index: modelKey,

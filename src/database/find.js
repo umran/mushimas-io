@@ -1,4 +1,5 @@
 const { formatResult, deriveArgs } = require('./utils')
+const { validatePaginatedField } = require('../validators')
 
 const DEFAULT_LIMIT = 20
 const DEFAULT_SORT_DIRECTION = -1
@@ -104,9 +105,14 @@ const getResults = async (model, query, sort, limit, paginatedField, paginate) =
   }
 }
 
-module.exports = async ({model, args}) => {
+module.exports = async ({modelKey, model, args, schemas}) => {
   const { _options: options } = args
   const derivedArgs = deriveArgs(args)
+
+  // validate user submitted paginatedField
+  if (options && options.paginatedField) {
+    validatePaginatedField(options.paginatedField, modelKey, schemas)
+  }
 
   const { query, sort, limit, paginatedField, paginate } = constructParams(derivedArgs, options)
 

@@ -5,10 +5,10 @@ const deleteOptions = {
 module.exports = async ({model, ackTime, args}) => {
   const { _id } = args
 
-  const matchCondition = { _id, '@lastModified': { $lte: ackTime }, '@status': { $ne: 'DELETED' } }
+  const matchCondition = { _id, '@lastModified': { $lte: ackTime }, '@state': { $ne: 'DELETED' } }
 
   let document = await model.findOneAndUpdate(matchCondition, {
-    '@status': 'DELETED',
+    '@state': 'DELETED',
     '@lastModified': ackTime,
     '@lastCommitted': new Date(),
     $inc: {
