@@ -1,6 +1,6 @@
 const { find } = require('../database')
 const { findIndex } = require('./utils')
-const { validatePaginatedField } = require('../validators')
+const { validatePaginatedField, validateMatchFields } = require('../validators')
 
 const DEFAULT_LIMIT = 20
 const DEFAULT_SORT_DIRECTION = 'desc'
@@ -133,9 +133,15 @@ const hydrateResults = async (model, results, options={}) => {
 module.exports = async ({collection, model, args, schemas, client}) => {
   const { query, _options: options } = args
 
-  // validate user submitted paginatedField
-  if (options && options.paginatedField) {
-    validatePaginatedField(options.paginatedField, collection, schemas)
+  // validate user options
+  if (options) {
+    if (options.paginatedField) {
+      validatePaginatedField(options.paginatedField, collection, schemas)
+    }
+
+    if (options.matchFields) {
+      validateMatchFields(options.matchFields, collection, schemas)
+    }
   }
 
   let results = await client.search({
