@@ -1,7 +1,7 @@
-module.exports = async ({modelKey, _id, client}) => {
+module.exports = async ({collection, _id, client}) => {
   await client.delete({
-    index: modelKey,
-    type: modelKey,
+    index: collection,
+    type: collection,
     id: _id,
     ignore: [404]
   })

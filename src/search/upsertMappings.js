@@ -1,6 +1,6 @@
-const createIndex = async (modelKey, client) => {
+const createIndex = async (collection, client) => {
   try {
-    await client.indices.create({ index: modelKey })
+    await client.indices.create({ index: collection })
   } catch (err) {
     if (err.response) {
       const response = JSON.parse(err.response)
@@ -13,24 +13,24 @@ const createIndex = async (modelKey, client) => {
   }
 }
 
-const createMapping = async ({modelKey, mapping, client}) => {
+const createMapping = async (collection, mapping, client) => {
   await client.indices.putMapping({
-    index: modelKey,
-    type: modelKey,
+    index: collection,
+    type: collection,
     body: mapping
   })
 }
 
-module.exports = async (mappings, schemas, client) => {
+module.exports = async ({mappings, schemas, client}) => {
   let upserts = []
 
   Object.keys(mappings).filter(schemaKey => schemas[schemaKey].class === 'collection')
-    .forEach(modelKey => {
+    .forEach(collection => {
       upserts.push(new Promise(async (resolve, reject) => {
 
         try {
-          await createIndex(modelKey, client)
-          await createMapping(modelKey, mappings[modelKey](), client)
+          await createIndex(collection, client)
+          await createMapping(collection, mappings[collection](), client)
         } catch(err) {
           return reject(err)
         }
