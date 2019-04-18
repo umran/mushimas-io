@@ -1,4 +1,4 @@
-const { _find } = require('../database/_find')
+const _find = require('../database/_find')
 const { findIndex } = require('./utils')
 const { validatePaginatedField, validateMatchFields } = require('../validators')
 
