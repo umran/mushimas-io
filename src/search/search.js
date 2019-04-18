@@ -1,4 +1,4 @@
-const { find } = require('../database')
+const { _find } = require('../database/_find')
 const { findIndex } = require('./utils')
 const { validatePaginatedField, validateMatchFields } = require('../validators')
 
@@ -30,7 +30,7 @@ const inferSort = (field, direction) => {
 
 const lookupIds = async (_ids, model) => {
 
-  const docs = await find(model, { _id: { $in: _ids }, _options: { paginate: false } })
+  const docs = await _find(model, { _id: { $in: _ids }, _options: { paginate: false } })
 
   let sorted = []
   for (var i = 0; i < _ids.length; i++) {
