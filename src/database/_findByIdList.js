@@ -118,6 +118,9 @@ module.exports = async (context, args) => {
     '@bucket': bucket
   }
 
+  // debugging
+  console.log(finalArgs)
+
   const { query, sort, limit, paginatedField, paginate } = constructParams(finalArgs, options)
 
   return await getResults(model, query, sort, limit, paginatedField, paginate)
