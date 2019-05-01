@@ -14,13 +14,13 @@ const getFullPath = partial => partial === '_id' ? partial : PARENT_PATH.concat(
 
 const inferSort = (field, direction) => {
   let result = {
-    [`${getFullPath(field)}`]: direction
+    [getFullPath(field)]: direction
   }
 
   if (field !== DEFAULT_PAGINATED_FIELD) {
     result = {
       ...result,
-      [`${getFullPath(DEFAULT_PAGINATED_FIELD)}`]: DEFAULT_SORT_DIRECTION
+      [getFullPath(DEFAULT_PAGINATED_FIELD)]: DEFAULT_SORT_DIRECTION
     }
   }
 
@@ -135,5 +135,5 @@ module.exports = async (context, args) => {
 
   const { query, sort, limit, paginatedField, paginate } = constructParams(finalArgs, options)
 
-  return await getResults(model, query, sort, limit, paginatedField, paginate)
+  return await getResults(query, sort, limit, paginatedField, paginate)
 }
