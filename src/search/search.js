@@ -1,6 +1,8 @@
-const _find = require('../database/_find')
+const _findByIdList = require('../database/_find')
 const { findIndex } = require('./utils')
 const { validatePaginatedField, validateMatchFields } = require('../validators')
+
+const PARENT_PATH = '@document'
 
 const DEFAULT_LIMIT = 20
 const DEFAULT_SORT_DIRECTION = 'desc'
@@ -28,9 +30,16 @@ const inferSort = (field, direction) => {
   return result
 }
 
-const lookupIds = async (_ids, model) => {
+const extractDoc = doc => {
+  return {
+    ...doc[PARENT_PATH],
+    _id: doc._id.toString()
+  }
+}
 
-  const docs = await _find(model, { _id: { $in: _ids }, _options: { paginate: false } })
+const lookupIds = async (context, _ids) => {
+
+  const docs = await _findByIdList(context, { _id: { $in: _ids }, _options: { paginate: false } })
 
   let sorted = []
   for (var i = 0; i < _ids.length; i++) {
@@ -39,7 +48,7 @@ const lookupIds = async (_ids, model) => {
     })
 
     if (index !== null) {
-      sorted.push(docs.results[index])
+      sorted.push(extractDoc(docs.results[index]))
     }
   }
 
@@ -96,7 +105,7 @@ const createBody = (query, options) => {
   return body
 }
 
-const hydrateResults = async (model, results, options={}) => {
+const hydrateResults = async (context, results, options={}) => {
   const { paginate, paginatedField, limit } = options
   const _limit = limit || DEFAULT_LIMIT
 
@@ -122,7 +131,7 @@ const hydrateResults = async (model, results, options={}) => {
     }
   }
 
-  let hydrated = await lookupIds(results.hits.hits.map(hit => hit._id), model)
+  let hydrated = await lookupIds(context, results.hits.hits.map(hit => hit._id))
 
   return {
     results: hydrated,
@@ -130,7 +139,8 @@ const hydrateResults = async (model, results, options={}) => {
   }
 }
 
-module.exports = async ({collection, model, args, schemas, client}) => {
+module.exports = async ({context, args, schemas, client}) => {
+  const { bucket, collection } = context
   const { query, _options: options } = args
 
   // validate user options
@@ -145,10 +155,10 @@ module.exports = async ({collection, model, args, schemas, client}) => {
   }
 
   let results = await client.search({
-    index: collection,
-    type: collection,
+    index: `${bucket}_${collection}`,
+    type: `${bucket}_${collection}`,
     body: createBody(query, options)
   })
 
-  return await hydrateResults(model, results, options)
+  return await hydrateResults(context, results, options)
 }

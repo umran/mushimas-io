@@ -1,14 +1,18 @@
+const PARENT_PATH = '@document'
+
+const extractDoc = doc => {
+  return {
+    ...doc[PARENT_PATH],
+    _id: doc._id.toString()
+  }
+}
+
 exports.formatResult = (result) => {
   if (Array.isArray(result)) {
-    result = result.map(res => {
-      res._id = res._id.toString()
-      return res
-    })
+    return result.map(res => extractDoc(res))
   } else if (result) {
-    result._id = result._id.toString()
+    return extractDoc(result)
   }
-
-  return result
 }
 
 exports.deriveArgs = args => {

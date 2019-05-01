@@ -1,5 +1,8 @@
+const model = require('../model')
+
 const { formatResult, deriveArgs } = require('./utils')
 
+const PARENT_PATH = '@document'
 const DEFAULT_LIMIT = 20
 const DEFAULT_SORT_DIRECTION = -1
 const DEFAULT_PAGINATED_FIELD = '_id'
@@ -7,15 +10,17 @@ const DEFAULT_PAGINATE_VALUE = true
 
 const inferSortOperator = sortDirection => sortDirection === -1 ? '$lt' : '$gt'
 
+const getFullPath = partial => PARENT_PATH.concat('.', partial)
+
 const inferSort = (field, direction) => {
   let result = {
-    [field]: direction
+    [getFullPath(field)]: direction
   }
 
   if (field !== DEFAULT_PAGINATED_FIELD) {
     result = {
       ...result,
-      [DEFAULT_PAGINATED_FIELD]: DEFAULT_SORT_DIRECTION
+      [getFullPath(DEFAULT_PAGINATED_FIELD)]: DEFAULT_SORT_DIRECTION
     }
   }
 
@@ -28,7 +33,7 @@ const constructParams = (args, options) => {
       query: args,
       sort: inferSort(DEFAULT_PAGINATED_FIELD, DEFAULT_SORT_DIRECTION),
       limit: DEFAULT_LIMIT,
-      paginatedField: DEFAULT_PAGINATED_FIELD,
+      paginatedField: getFullPath(DEFAULT_PAGINATED_FIELD),
       paginate: DEFAULT_PAGINATE_VALUE
     }
   }
@@ -48,11 +53,11 @@ const constructParams = (args, options) => {
     query = {
       $and: [args, {
         $or: [{
-          [paginatedField]: { [sortOperator]: cursor_primary }
+          [getFullPath(paginatedField)]: { [sortOperator]: cursor_primary }
         },
         {
-          [paginatedField]: cursor_primary,
-          [DEFAULT_PAGINATED_FIELD]: { [inferSortOperator(DEFAULT_SORT_DIRECTION)]: cursor_secondary }
+          [getFullPath(paginatedField)]: cursor_primary,
+          [getFullPath(DEFAULT_PAGINATED_FIELD)]: { [inferSortOperator(DEFAULT_SORT_DIRECTION)]: cursor_secondary }
         }]
       }]
     }
@@ -60,7 +65,7 @@ const constructParams = (args, options) => {
   } else if (cursor) {
     query = {
       $and: [args, {
-        [DEFAULT_PAGINATED_FIELD]: { [sortOperator]: cursor }
+        [getFullPath(DEFAULT_PAGINATED_FIELD)]: { [sortOperator]: cursor }
       }]
     }
   }
@@ -70,12 +75,12 @@ const constructParams = (args, options) => {
     sort: inferSort(paginatedField || DEFAULT_PAGINATED_FIELD,
       sortDirection || DEFAULT_SORT_DIRECTION),
     limit: limit || DEFAULT_LIMIT,
-    paginatedField: paginatedField || DEFAULT_PAGINATED_FIELD,
+    paginatedField: getFullPath(paginatedField || DEFAULT_PAGINATED_FIELD),
     paginate: typeof paginate !== 'undefined' ? paginate : DEFAULT_PAGINATE_VALUE
   }
 }
 
-const getResults = async (model, query, sort, limit, paginatedField, paginate) => {
+const getResults = async (query, sort, limit, paginatedField, paginate) => {
   let results
   
   if (paginate === true) {
@@ -92,9 +97,9 @@ const getResults = async (model, query, sort, limit, paginatedField, paginate) =
     const cursorElement = results[results.length - 1]
 
     if (paginatedField && paginatedField !== DEFAULT_PAGINATED_FIELD) {
-      nextCursor = `${cursorElement[paginatedField]}_${cursorElement[DEFAULT_PAGINATED_FIELD]}`
+      nextCursor = `${cursorElement[genFullPath(paginatedField)]}_${cursorElement[genFullPath(DEFAULT_PAGINATED_FIELD)]}`
     } else {
-      nextCursor = `${cursorElement[DEFAULT_PAGINATED_FIELD]}`
+      nextCursor = `${cursorElement[genFullPath(DEFAULT_PAGINATED_FIELD)]}`
     }
   }
 
@@ -104,11 +109,16 @@ const getResults = async (model, query, sort, limit, paginatedField, paginate) =
   }
 }
 
-module.exports = async (model, args) => {
+module.exports = async (context, args) => {
+  const { bucket, collection } = context
   const { _options: options } = args
-  const derivedArgs = deriveArgs(args)
+  const finalArgs = {
+    ...deriveArgs(args),
+    '@collection': collection,
+    '@bucket': bucket
+  }
 
-  const { query, sort, limit, paginatedField, paginate } = constructParams(derivedArgs, options)
+  const { query, sort, limit, paginatedField, paginate } = constructParams(finalArgs, options)
 
   return await getResults(model, query, sort, limit, paginatedField, paginate)
 }
