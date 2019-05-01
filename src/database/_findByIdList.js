@@ -70,6 +70,16 @@ const constructParams = (args, options) => {
     }
   }
 
+  // debugging
+  console.log({
+    query,
+    sort: inferSort(paginatedField || DEFAULT_PAGINATED_FIELD,
+      sortDirection || DEFAULT_SORT_DIRECTION),
+    limit: limit || DEFAULT_LIMIT,
+    paginatedField: getFullPath(paginatedField || DEFAULT_PAGINATED_FIELD),
+    paginate: typeof paginate !== 'undefined' ? paginate : DEFAULT_PAGINATE_VALUE
+  })
+
   return {
     query,
     sort: inferSort(paginatedField || DEFAULT_PAGINATED_FIELD,
