@@ -2,8 +2,6 @@ const _findByIdList = require('../database/_findByIdList')
 const { findIndex } = require('./utils')
 const { validatePaginatedField, validateMatchFields } = require('../validators')
 
-const { ObjectId } = require('mongoose').Types
-
 const PARENT_PATH = '@document'
 
 const DEFAULT_LIMIT = 20
@@ -32,13 +30,6 @@ const inferSort = (field, direction) => {
   return result
 }
 
-const extractDoc = doc => {
-  return {
-    ...doc[PARENT_PATH],
-    _id: doc._id.toString()
-  }
-}
-
 const lookupIds = async (context, _ids) => {
 
   const docs = await _findByIdList(context, { _id: { $in: _ids }, _options: { paginate: false } })
@@ -50,7 +41,7 @@ const lookupIds = async (context, _ids) => {
     })
 
     if (index !== null) {
-      sorted.push(extractDoc(docs.results[index]))
+      sorted.push(docs.results[index])
     }
   }
 
@@ -133,7 +124,7 @@ const hydrateResults = async (context, results, options={}) => {
     }
   }
 
-  let hydrated = await lookupIds(context, results.hits.hits.map(hit => ObjectId(hit._id)))
+  let hydrated = await lookupIds(context, results.hits.hits.map(hit => hit._id))
 
   return {
     results: hydrated,
