@@ -32,6 +32,7 @@
     "mocha-lcov-reporter": "^1.3.0"
   },
   "dependencies": {
+    "mongoose": "^5.5.5",
     "mushimas-crypto": "^0.0.1"
   }
 }
