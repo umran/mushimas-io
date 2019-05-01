@@ -33,7 +33,7 @@ const constructParams = (args, options) => {
       query: args,
       sort: inferSort(DEFAULT_PAGINATED_FIELD, DEFAULT_SORT_DIRECTION),
       limit: DEFAULT_LIMIT,
-      paginatedField: getFullPath(DEFAULT_PAGINATED_FIELD),
+      paginatedField: DEFAULT_PAGINATED_FIELD,
       paginate: DEFAULT_PAGINATE_VALUE
     }
   }
@@ -72,22 +72,12 @@ const constructParams = (args, options) => {
     query = args
   }
 
-  // debugging
-  console.log({
-    query,
-    sort: inferSort(paginatedField || DEFAULT_PAGINATED_FIELD,
-      sortDirection || DEFAULT_SORT_DIRECTION),
-    limit: limit || DEFAULT_LIMIT,
-    paginatedField: getFullPath(paginatedField || DEFAULT_PAGINATED_FIELD),
-    paginate: typeof paginate !== 'undefined' ? paginate : DEFAULT_PAGINATE_VALUE
-  })
-
   return {
     query,
     sort: inferSort(paginatedField || DEFAULT_PAGINATED_FIELD,
       sortDirection || DEFAULT_SORT_DIRECTION),
     limit: limit || DEFAULT_LIMIT,
-    paginatedField: getFullPath(paginatedField || DEFAULT_PAGINATED_FIELD),
+    paginatedField: paginatedField || DEFAULT_PAGINATED_FIELD,
     paginate: typeof paginate !== 'undefined' ? paginate : DEFAULT_PAGINATE_VALUE
   }
 }
@@ -109,9 +99,9 @@ const getResults = async (query, sort, limit, paginatedField, paginate) => {
     const cursorElement = results[results.length - 1]
 
     if (paginatedField && paginatedField !== DEFAULT_PAGINATED_FIELD) {
-      nextCursor = `${cursorElement[getFullPath(paginatedField)]}_${cursorElement[getFullPath(DEFAULT_PAGINATED_FIELD)]}`
+      nextCursor = `${cursorElement[paginatedField]}_${cursorElement[DEFAULT_PAGINATED_FIELD]}`
     } else {
-      nextCursor = `${cursorElement[getFullPath(DEFAULT_PAGINATED_FIELD)]}`
+      nextCursor = `${cursorElement[DEFAULT_PAGINATED_FIELD]}`
     }
   }
 
