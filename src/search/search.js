@@ -2,6 +2,8 @@ const _findByIdList = require('../database/_findByIdList')
 const { findIndex } = require('./utils')
 const { validatePaginatedField, validateMatchFields } = require('../validators')
 
+const { ObjectId } = require('mongoose').Types
+
 const PARENT_PATH = '@document'
 
 const DEFAULT_LIMIT = 20
@@ -131,7 +133,7 @@ const hydrateResults = async (context, results, options={}) => {
     }
   }
 
-  let hydrated = await lookupIds(context, results.hits.hits.map(hit => hit._id))
+  let hydrated = await lookupIds(context, results.hits.hits.map(hit => ObjectId(hit._id)))
 
   return {
     results: hydrated,
