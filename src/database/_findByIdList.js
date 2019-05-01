@@ -10,7 +10,7 @@ const DEFAULT_PAGINATE_VALUE = true
 
 const inferSortOperator = sortDirection => sortDirection === -1 ? '$lt' : '$gt'
 
-const getFullPath = partial => PARENT_PATH.concat('.', partial)
+const getFullPath = partial => partial === '_id' ? partial : PARENT_PATH.concat('.', partial)
 
 const inferSort = (field, direction) => {
   let result = {
