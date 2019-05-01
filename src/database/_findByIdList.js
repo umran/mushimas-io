@@ -68,6 +68,8 @@ const constructParams = (args, options) => {
         [getFullPath(DEFAULT_PAGINATED_FIELD)]: { [sortOperator]: cursor }
       }]
     }
+  } else {
+    query = args
   }
 
   // debugging
