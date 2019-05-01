@@ -1,3 +1,6 @@
+const model = require('../model')
+const flatten = require('../flatten')
+
 const { filterUpdates } = require('./utils')
 
 const updateOptions = {
@@ -5,16 +8,29 @@ const updateOptions = {
   new: true
 }
 
-module.exports = async ({model, ackTime, args}) => {
+const PARENT_PATH = '@document'
+
+const getFlatDoc = args => flatten({ [PARENT_PATH]: args })
+
+module.exports = async ({context, ackTime, args}) => {
+  const { bucket, collection } = context
   const { _id } = args
   const updates = filterUpdates(args)
 
-  const matchCondition = { _id, '@lastModified': { $lte: ackTime }, '@state': { $ne: 'DELETED' } }
+  const matchCondition = { 
+    _id,
+    '@lastModified': { $lte: ackTime },
+    '@state': { $ne: 'DELETED' },
+    '@collection': collection,
+    '@bucket': bucket
+  }
 
   let document = await model.findOneAndUpdate(matchCondition, {
-    ...updates,
-    '@lastModified': ackTime,
-    '@lastCommitted': new Date(),
+    $set: {
+      ...getFlatDoc(updates),
+      '@lastModified': ackTime,
+      '@lastCommitted': new Date()
+    },
     $inc: {
       '@version': 1
     }
