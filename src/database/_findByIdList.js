@@ -14,13 +14,13 @@ const getFullPath = partial => partial === '_id' ? partial : PARENT_PATH.concat(
 
 const inferSort = (field, direction) => {
   let result = {
-    [getFullPath(field)]: direction
+    [`${getFullPath(field)}`]: direction
   }
 
   if (field !== DEFAULT_PAGINATED_FIELD) {
     result = {
       ...result,
-      [getFullPath(DEFAULT_PAGINATED_FIELD)]: DEFAULT_SORT_DIRECTION
+      [`${getFullPath(DEFAULT_PAGINATED_FIELD)}`]: DEFAULT_SORT_DIRECTION
     }
   }
 
