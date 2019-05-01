@@ -102,7 +102,16 @@ const getResults = async (query, sort, limit, paginatedField, paginate) => {
 
     const cursorElement = results[results.length - 1]
 
+    // debugging
+    console.log('cursor element')
+    console.log(cursorElement)
+
     if (paginatedField && paginatedField !== DEFAULT_PAGINATED_FIELD) {
+
+      // debugging
+      console.log('paginated field')
+      console.log(paginatedField)
+
       nextCursor = `${cursorElement[paginatedField]}_${cursorElement[DEFAULT_PAGINATED_FIELD]}`
     } else {
       nextCursor = `${cursorElement[DEFAULT_PAGINATED_FIELD]}`
