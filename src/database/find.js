@@ -103,9 +103,9 @@ const getResults = async (query, sort, limit, paginatedField, paginate) => {
     const cursorElement = results[results.length - 1]
 
     if (paginatedField && paginatedField !== DEFAULT_PAGINATED_FIELD) {
-      nextCursor = `${cursorElement[genFullPath(paginatedField)]}_${cursorElement[genFullPath(DEFAULT_PAGINATED_FIELD)]}`
+      nextCursor = `${cursorElement[getFullPath(paginatedField)]}_${cursorElement[getFullPath(DEFAULT_PAGINATED_FIELD)]}`
     } else {
-      nextCursor = `${cursorElement[genFullPath(DEFAULT_PAGINATED_FIELD)]}`
+      nextCursor = `${cursorElement[getFullPath(DEFAULT_PAGINATED_FIELD)]}`
     }
   }
 
