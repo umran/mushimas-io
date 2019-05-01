@@ -17,8 +17,12 @@ module.exports = (path, schemaKey, schemas) => {
       throw new Error('undefined field')
     }
 
+    if (!field.required) {
+      throw new Error('invalid path: path cannot have a non required field')
+    }
+
     if (field.type === 'array') {
-      throw new Error('invalid path: path cannot include array field')
+      throw new Error('invalid path: path cannot have an array field')
     }
 
     if (field.type === 'reference') {
