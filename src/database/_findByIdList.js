@@ -27,6 +27,17 @@ const inferSort = (field, direction) => {
   return result
 }
 
+const getCursor = (cursorElement, path) => {
+  let unrolledPath = path.split('.')
+  let nextLevel = cursorElement
+
+  unrolledPath.forEach(level => {
+    nextLevel = nextLevel[level]
+  })
+
+  return nextLevel
+}
+
 const constructParams = (args, options) => {
   if (!options) {
     return {
@@ -99,9 +110,9 @@ const getResults = async (query, sort, limit, paginatedField, paginate) => {
     const cursorElement = results[results.length - 1]
 
     if (paginatedField && paginatedField !== DEFAULT_PAGINATED_FIELD) {
-      nextCursor = `${cursorElement[paginatedField]}_${cursorElement[DEFAULT_PAGINATED_FIELD]}`
+      nextCursor = `${getCursor(cursorElement, paginatedField)}_${getCursor(cursorElement, DEFAULT_PAGINATED_FIELD)}`
     } else {
-      nextCursor = `${cursorElement[DEFAULT_PAGINATED_FIELD]}`
+      nextCursor = `${getCursor(cursorElement, DEFAULT_PAGINATED_FIELD)}`
     }
   }
 
