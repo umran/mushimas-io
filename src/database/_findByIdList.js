@@ -122,13 +122,13 @@ const getResults = async (query, sort, limit, paginatedField, paginate) => {
   }
 }
 
-module.exports = async (context, args) => {
-  const { bucket, collection } = context
+module.exports = async (environment, args) => {
+  const { bucket, collection } = environment
   const { _options: options } = args
   const finalArgs = {
     ...deriveArgs(args),
-    '@collection': collection,
-    '@bucket': bucket
+    '@collectionId': collection.id,
+    '@bucketId': bucket.id
   }
 
   const { query, sort, limit, paginatedField, paginate } = constructParams(finalArgs, options)

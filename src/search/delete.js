@@ -1,9 +1,9 @@
-module.exports = async ({context, _id, client}) => {
-  const { bucket, collection } = context
+module.exports = async ({environment, _id, client}) => {
+  const { bucket, collection } = environment
 
   await client.delete({
-    index: `${bucket}_${collection}`,
-    type: `${bucket}_${collection}`,
+    index: `${bucket.id}_${collection.id}`,
+    type: `${bucket.id}_${collection.id}`,
     id: _id,
     ignore: [404]
   })

@@ -4,16 +4,15 @@ const deleteOptions = {
   new: true
 }
 
-module.exports = async ({context, ackTime, args}) => {
-  const { bucket, collection } = context
+module.exports = async ({environment, ackTime, args}) => {
+  const { bucket, collection } = environment
   const { _id } = args
 
-  const matchCondition = { 
+  const matchCondition = {
     _id,
-    '@lastModified': { $lte: ackTime },
     '@state': { $ne: 'DELETED' },
-    '@collection': collection,
-    '@bucket': bucket
+    '@collectionId': collection.id,
+    '@bucketId': bucket.id
   }
 
   let document = await model.findOneAndUpdate(matchCondition, {

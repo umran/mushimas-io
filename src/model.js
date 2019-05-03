@@ -25,7 +25,15 @@ const Document = Schema({
     type: Number,
     required: true
   },
+  '@collectionId': {
+    type: String,
+    required: true
+  },
   '@collection': {
+    type: String,
+    required: true
+  },
+  '@bucketId': {
     type: String,
     required: true
   },

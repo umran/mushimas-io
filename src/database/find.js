@@ -2,7 +2,6 @@ const model = require('../model')
 const flatten = require('../flatten')
 
 const { formatResult, deriveArgs } = require('./utils')
-const { validatePaginatedField } = require('../validators')
 
 const PARENT_PATH = '@document'
 const DEFAULT_LIMIT = 20
@@ -126,18 +125,13 @@ const getResults = async (query, sort, limit, paginatedField, paginate) => {
   }
 }
 
-module.exports = async ({context, args, schemas}) => {
-  const { bucket, collection } = context
+module.exports = async ({environment, args, schemas}) => {
+  const { bucket, collection } = environment
   const { _options: options } = args
   const finalArgs = {
     ...getFlatDoc(deriveArgs(args)),
-    '@collection': collection,
-    '@bucket': bucket
-  }
-
-  // validate user submitted paginatedField
-  if (options && options.paginatedField) {
-    validatePaginatedField(options.paginatedField, collection, schemas)
+    '@collectionId': collection.id,
+    '@bucketId': bucket.id
   }
 
   const { query, sort, limit, paginatedField, paginate } = constructParams(finalArgs, options)

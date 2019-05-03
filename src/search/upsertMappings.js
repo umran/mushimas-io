@@ -21,8 +21,7 @@ const createMapping = async (index, mapping, client) => {
   })
 }
 
-module.exports = async ({context, mappings, schemas, client}) => {
-  const { bucket } = context
+module.exports = async ({bucket, collections, mappings, schemas, client}) => {
   let upserts = []
 
   Object.keys(mappings).filter(schemaKey => schemas[schemaKey].class === 'collection')
@@ -30,8 +29,8 @@ module.exports = async ({context, mappings, schemas, client}) => {
       upserts.push(new Promise(async (resolve, reject) => {
 
         try {
-          await createIndex(`${bucket}_${collection}`, client)
-          await createMapping(`${bucket}_${collection}`, mappings[collection](), client)
+          await createIndex(`${bucket.id}_${collections[collection]}`, client)
+          await createMapping(`${bucket.id}_${collections[collection]}`, mappings[collection](), client)
         } catch(err) {
           return reject(err)
         }

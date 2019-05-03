@@ -1,6 +1,5 @@
 const _findByIdList = require('../database/_findByIdList')
 const { findIndex } = require('./utils')
-const { validatePaginatedField, validateMatchFields } = require('../validators')
 
 const PARENT_PATH = '@document'
 
@@ -30,9 +29,9 @@ const inferSort = (field, direction) => {
   return result
 }
 
-const lookupIds = async (context, _ids) => {
+const lookupIds = async (environment, _ids) => {
 
-  const docs = await _findByIdList(context, { _id: { $in: _ids }, _options: { paginate: false } })
+  const docs = await _findByIdList(environment, { _id: { $in: _ids }, _options: { paginate: false } })
 
   let sorted = []
   for (var i = 0; i < _ids.length; i++) {
@@ -98,7 +97,7 @@ const createBody = (query, options) => {
   return body
 }
 
-const hydrateResults = async (context, results, options={}) => {
+const hydrateResults = async (environment, results, options={}) => {
   const { paginate, paginatedField, limit } = options
   const _limit = limit || DEFAULT_LIMIT
 
@@ -124,7 +123,7 @@ const hydrateResults = async (context, results, options={}) => {
     }
   }
 
-  let hydrated = await lookupIds(context, results.hits.hits.map(hit => hit._id))
+  let hydrated = await lookupIds(environment, results.hits.hits.map(hit => hit._id))
 
   return {
     results: hydrated,
@@ -132,26 +131,15 @@ const hydrateResults = async (context, results, options={}) => {
   }
 }
 
-module.exports = async ({context, args, schemas, client}) => {
-  const { bucket, collection } = context
+module.exports = async ({environment, args, schemas, client}) => {
+  const { bucket, collection } = environment
   const { query, _options: options } = args
 
-  // validate user options
-  if (options) {
-    if (options.paginatedField) {
-      validatePaginatedField(options.paginatedField, collection, schemas)
-    }
-
-    if (options.matchFields) {
-      validateMatchFields(options.matchFields, collection, schemas)
-    }
-  }
-
   let results = await client.search({
-    index: `${bucket}_${collection}`,
-    type: `${bucket}_${collection}`,
+    index: `${bucket.id}_${collection.id}`,
+    type: `${bucket.id}_${collection.id}`,
     body: createBody(query, options)
   })
 
-  return await hydrateResults(context, results, options)
+  return await hydrateResults(environment, results, options)
 }
