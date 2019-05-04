@@ -1,4 +1,4 @@
-const model = require('../model')
+const { Document } = require('mongoose-models')
 const { formatResult } = require('./utils')
 
 const PARENT_PATH = '@document'
@@ -12,5 +12,5 @@ module.exports = async ({environment, args}) => {
     '@bucketId': bucket.id
   }
 
-  return formatResult(await model.findOne(finalArgs).lean())
+  return formatResult(await Document.findOne(finalArgs).lean())
 }

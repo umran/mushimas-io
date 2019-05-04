@@ -1,4 +1,4 @@
-const model = require('../model')
+const { Document } = require('mongoose-models')
 
 const PARENT_PATH = '@document'
 
@@ -14,7 +14,7 @@ const extractDoc = (doc, projection) => {
 
 module.exports = async ({environment, projection, _id, client}) => {
   const { bucket, collection } = environment
-  let doc = await model.findOne({ _id, '@collectionId': collection.id, '@bucketId': bucket.id }).lean()
+  let doc = await Document.findOne({ _id, '@collectionId': collection.id, '@bucketId': bucket.id }).lean()
 
   await client.update({
     index: `${bucket.id}_${collection.id}`,

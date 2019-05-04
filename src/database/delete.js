@@ -1,4 +1,4 @@
-const model = require('../model')
+const { Document } = require('mongoose-models')
 
 const deleteOptions = {
   new: true
@@ -15,7 +15,7 @@ module.exports = async ({environment, ackTime, args}) => {
     '@bucketId': bucket.id
   }
 
-  let document = await model.findOneAndUpdate(matchCondition, {
+  let document = await Document.findOneAndUpdate(matchCondition, {
     $set: {
       '@state': 'DELETED',
       '@lastModified': ackTime,

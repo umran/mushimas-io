@@ -1,4 +1,4 @@
-const model = require('../model')
+const { Document } = require('mongoose-models')
 const flatten = require('../flatten')
 
 const { formatResult, deriveArgs } = require('./utils')
@@ -100,9 +100,9 @@ const getResults = async (query, sort, limit, paginatedField, paginate) => {
   let results
   
   if (paginate === true) {
-    results = formatResult(await model.find(query).sort(sort).limit(limit + 1).lean())
+    results = formatResult(await Document.find(query).sort(sort).limit(limit + 1).lean())
   } else {
-    results = formatResult(await model.find(query).sort(sort).lean())
+    results = formatResult(await Document.find(query).sort(sort).lean())
   }
 
   let nextCursor

@@ -1,4 +1,4 @@
-const model = require('../model')
+const { Document } = require('mongoose-models')
 const flatten = require('../flatten')
 
 const { filterUpdates } = require('./utils')
@@ -24,7 +24,7 @@ module.exports = async ({environment, ackTime, args}) => {
     '@bucketId': bucket.id
   }
 
-  let document = await model.findOneAndUpdate(matchCondition, {
+  let document = await Document.findOneAndUpdate(matchCondition, {
     $set: {
       ...getFlatDoc(updates),
       '@lastModified': ackTime,

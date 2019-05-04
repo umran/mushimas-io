@@ -1,11 +1,11 @@
-const model = require('../model')
+const { Document } = require('mongoose-models')
 
 const PARENT_PATH = '@document'
 
 module.exports = async ({environment, ackTime, args}) => {
   const { bucket, collection } = environment
 
-  let document = await model.create({
+  let document = await Document.create({
     [PARENT_PATH]: args,
     '@state': 'ARCHIVED',
     '@lastModified': ackTime,
