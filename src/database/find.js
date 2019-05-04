@@ -125,7 +125,7 @@ const getResults = async (query, sort, limit, paginatedField, paginate) => {
   }
 }
 
-module.exports = async ({environment, args, schemas}) => {
+module.exports = async ({environment, args}) => {
   const { bucket, collection } = environment
   const { _options: options } = args
   const finalArgs = {

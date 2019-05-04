@@ -131,7 +131,7 @@ const hydrateResults = async (environment, results, options={}) => {
   }
 }
 
-module.exports = async ({environment, args, schemas, client}) => {
+module.exports = async ({environment, args, client}) => {
   const { bucket, collection } = environment
   const { query, _options: options } = args
 
