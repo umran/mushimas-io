@@ -1,4 +1,4 @@
-const { Document } = require('mongoose-models')
+const { Document } = require('mushimas-models')
 
 const deleteOptions = {
   new: true

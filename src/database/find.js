@@ -1,4 +1,4 @@
-const { Document } = require('mongoose-models')
+const { Document } = require('mushimas-models')
 const flatten = require('../flatten')
 
 const { formatResult, deriveArgs } = require('./utils')
