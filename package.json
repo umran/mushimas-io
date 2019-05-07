@@ -32,8 +32,8 @@
     "mocha-lcov-reporter": "^1.3.0"
   },
   "dependencies": {
-    "mongoose": "^5.5.5",
+    "mongoose": "^5.5.6",
     "mushimas-crypto": "^0.0.1",
-    "mushimas-models": "^1.0.0"
+    "mushimas-models": "^1.0.1"
   }
 }
