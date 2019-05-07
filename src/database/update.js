@@ -3,19 +3,26 @@ const flatten = require('../flatten')
 
 const { filterUpdates } = require('./utils')
 
-const updateOptions = {
-  runValidators: true,
-  new: true
-}
-
 const PARENT_PATH = '@document'
 
 const getFlatDoc = args => flatten({ [PARENT_PATH]: args })
 
-module.exports = async ({environment, ackTime, args}) => {
+module.exports = async ({environment, ackTime, args, session}) => {
   const { bucket, collection } = environment
   const { _id } = args
   const updates = filterUpdates(args)
+
+  let options = {
+    runValidators: true,
+    new: true
+  }
+
+  if (session) {
+    options = {
+      ...options,
+      session
+    }
+  }
 
   const matchCondition = {
     _id,
@@ -33,7 +40,7 @@ module.exports = async ({environment, ackTime, args}) => {
     $inc: {
       '@version': 1
     }
-  }, updateOptions)
+  }, options)
 
   return _id
 }

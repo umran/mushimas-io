@@ -1,12 +1,19 @@
 const { Document } = require('mushimas-models')
 
-const deleteOptions = {
-  new: true
-}
-
-module.exports = async ({environment, ackTime, args}) => {
+module.exports = async ({environment, ackTime, args, session}) => {
   const { bucket, collection } = environment
   const { _id } = args
+
+  let options = {
+    new: true
+  }
+
+  if (session) {
+    options = {
+      ...options,
+      session
+    }
+  }
 
   const matchCondition = {
     _id,
@@ -24,7 +31,7 @@ module.exports = async ({environment, ackTime, args}) => {
     $inc: {
       '@version': 1
     }
-  }, deleteOptions)
+  }, options)
 
   return _id
 }

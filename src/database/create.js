@@ -2,10 +2,16 @@ const { Document } = require('mushimas-models')
 
 const PARENT_PATH = '@document'
 
-module.exports = async ({environment, ackTime, args}) => {
+module.exports = async ({environment, ackTime, args, session}) => {
   const { bucket, collection } = environment
 
-  let document = await Document.create({
+  let options
+  
+  if (session) {
+    options = { session }
+  }
+
+  let document = await Document.create([{
     [PARENT_PATH]: args,
     '@state': 'ARCHIVED',
     '@lastModified': ackTime,
@@ -13,7 +19,7 @@ module.exports = async ({environment, ackTime, args}) => {
     '@collectionId': collection.id,
     '@bucketId': bucket.id,
     '@version': 0
-  })
+  }], options)
 
   return document._id.toString()
 }
