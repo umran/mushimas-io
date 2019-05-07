@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "mongoose": "^5.5.6",
-    "mushimas-crypto": "^0.0.1",
+    "mushimas-crypto": "0.0.2",
     "mushimas-models": "^1.0.1"
   }
 }
