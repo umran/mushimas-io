@@ -1,6 +1,6 @@
 {
   "name": "mushimas-io",
-  "version": "0.1.11",
+  "version": "0.2.0",
   "description": "data methods for mushimas",
   "main": "lib.js",
   "directories": {
