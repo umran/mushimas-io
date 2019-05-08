@@ -12,16 +12,10 @@ module.exports = async ({environment, ackTime, args, session}) => {
   const { _id } = args
   const updates = filterUpdates(args)
 
-  let options = {
-    runValidators: true,
-    new: true
-  }
+  let options
 
   if (session) {
-    options = {
-      ...options,
-      session
-    }
+    options = { session }
   }
 
   const matchCondition = {
@@ -31,7 +25,7 @@ module.exports = async ({environment, ackTime, args, session}) => {
     '@bucketId': bucket.id
   }
 
-  let document = await Document.findOneAndUpdate(matchCondition, {
+  await Document.findOneAndUpdate(matchCondition, {
     $set: {
       ...getFlatDoc(updates),
       '@lastModified': ackTime,

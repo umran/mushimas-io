@@ -22,7 +22,7 @@ module.exports = async ({environment, ackTime, args, session}) => {
     '@bucketId': bucket.id
   }
 
-  let document = await Document.findOneAndUpdate(matchCondition, {
+  await Document.findOneAndUpdate(matchCondition, {
     $set: {
       '@state': 'DELETED',
       '@lastModified': ackTime,
