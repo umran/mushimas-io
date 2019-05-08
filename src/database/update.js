@@ -25,7 +25,7 @@ module.exports = async ({environment, ackTime, args, session}) => {
     '@bucketId': bucket.id
   }
 
-  let document = await Document.findOneAndUpdate(matchCondition, {
+  const document = await Document.findOneAndUpdate(matchCondition, {
     $set: {
       ...getFlatDoc(updates),
       '@lastModified': ackTime,
@@ -37,7 +37,7 @@ module.exports = async ({environment, ackTime, args, session}) => {
   }, options)
 
   if (!document) {
-    throw new Error('the specified document could not be found')
+    throw new Error('the specified document could not be updated')
   }
 
   return _id

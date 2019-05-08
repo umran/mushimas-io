@@ -11,7 +11,7 @@ module.exports = async ({environment, ackTime, args, session}) => {
     options = { session }
   }
 
-  let document = await Document.create([{
+  const document = await Document.create([{
     [PARENT_PATH]: args,
     '@state': 'ARCHIVED',
     '@lastModified': ackTime,
