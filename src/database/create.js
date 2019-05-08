@@ -21,5 +21,5 @@ module.exports = async ({environment, ackTime, args, session}) => {
     '@version': 0
   }], options)
 
-  return document._id.toString()
+  return document[0]._id.toString()
 }
