@@ -4,15 +4,10 @@ module.exports = async ({environment, ackTime, args, session}) => {
   const { bucket, collection } = environment
   const { _id } = args
 
-  let options = {
-    new: true
-  }
+  let options
 
   if (session) {
-    options = {
-      ...options,
-      session
-    }
+    options = { session }
   }
 
   const matchCondition = {
@@ -22,7 +17,7 @@ module.exports = async ({environment, ackTime, args, session}) => {
     '@bucketId': bucket.id
   }
 
-  await Document.findOneAndUpdate(matchCondition, {
+  let document = await Document.findOneAndUpdate(matchCondition, {
     $set: {
       '@state': 'DELETED',
       '@lastModified': ackTime,
@@ -32,6 +27,10 @@ module.exports = async ({environment, ackTime, args, session}) => {
       '@version': 1
     }
   }, options)
+
+  if (!document) {
+    throw new Error('the specified document could not be found')
+  }
 
   return _id
 }
