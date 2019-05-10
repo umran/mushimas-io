@@ -13,7 +13,7 @@ module.exports = async ({environment, ackTime, args, session}) => {
 
   const document = await Document.create([{
     [PARENT_PATH]: args,
-    '@state': 'ARCHIVED',
+    '@state': 'PUBLISHED',
     '@lastModified': ackTime,
     '@lastCommitted': new Date(),
     '@collectionId': collection.id,
