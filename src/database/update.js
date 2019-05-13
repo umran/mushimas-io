@@ -1,5 +1,6 @@
 const { Document } = require('mushimas-models')
 const flatten = require('../flatten')
+const { ResourceError } = require('../errors')
 
 const { filterUpdates } = require('./utils')
 
@@ -37,7 +38,7 @@ module.exports = async ({environment, ackTime, args, session}) => {
   }, options)
 
   if (!document) {
-    throw new Error('the specified document could not be found')
+    throw new ResourceError('notFound', 'the specified document could not be found')
   }
 
   return _id

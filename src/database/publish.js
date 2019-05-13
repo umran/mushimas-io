@@ -1,4 +1,5 @@
 const { Document } = require('mushimas-models')
+const { ResourceError } = require('../errors')
 
 module.exports = async ({environment, ackTime, args, session}) => {
   const { bucket, collection } = environment
@@ -29,7 +30,7 @@ module.exports = async ({environment, ackTime, args, session}) => {
   }, options)
 
   if (!document) {
-    throw new Error('the specified document could not be found')
+    throw new ResourceError('notFound', 'the specified document could not be found')
   }
 
   return _id
