@@ -9,7 +9,8 @@ module.exports = async ({environment, ackTime, args, session}) => {
   const initialHash = generateHash(JSON.stringify(args))
 
   let options = {
-    upsert: true
+    upsert: true,
+    new: true
   }
   
   if (session) {
