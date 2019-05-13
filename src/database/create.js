@@ -21,6 +21,7 @@ module.exports = async ({environment, ackTime, args, session}) => {
   }
 
   const matchCondition = {
+    '@state': { $ne: 'DELETED' },
     '@bucketId': bucket.id,
     '@collectionId': collection.id,
     '@idempotencyKey': idempotencyKey,
