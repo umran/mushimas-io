@@ -15,7 +15,7 @@ module.exports = async ({environment, ackTime, args, session}) => {
   
   if (session) {
     options = {
-      ...options
+      ...options,
       session
     }
   }
