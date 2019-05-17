@@ -8,7 +8,7 @@ const DEFAULT_SORT_DIRECTION = -1
 const DEFAULT_PAGINATED_FIELD = '_id'
 const DEFAULT_PAGINATE_VALUE = true
 
-const args = { dummyField: 'dummyValue' }
+const args = { '@document.dummyField': 'dummyValue' }
 
 describe('database.utils.constructParams()', () => {
 
@@ -144,11 +144,13 @@ describe('database.utils.constructParams()', () => {
     }
 
     expectedSort = {
-      ['dummyField']: -1,
+      ['@document.dummyField']: -1,
       ['_id']: -1
     }
 
     const { sort } = constructParams(args, options)
+
+    expect(sort).to.deep.equal(expectedSort)
   })
 
   // verify sortDirection
@@ -159,11 +161,13 @@ describe('database.utils.constructParams()', () => {
     }
 
     expectedSort = {
-      ['dummyField']: 1,
+      ['@document.dummyField']: 1,
       ['_id']: -1
     }
 
     const { sort } = constructParams(args, options)
+
+    expect(sort).to.deep.equal(expectedSort)
   })
 
   it('returns a sort object with one predicate when either the default paginatedField is provided or none is provided', () => {
