@@ -1,13 +1,12 @@
 const { Document } = require('mushimas-models')
 const { formatResult } = require('./utils')
 
-const PARENT_PATH = '@document'
-
 module.exports = async ({environment, args}) => {
   const { bucket, collection } = environment
+  const { _id } = args
 
   const finalArgs = {
-    ...args,
+    _id,
     '@collectionId': collection.id,
     '@bucketId': bucket.id
   }

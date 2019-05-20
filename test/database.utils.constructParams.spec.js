@@ -100,7 +100,7 @@ describe('database.utils.constructParams()', () => {
   })
 
   // verify sortOperators
-  it('returns a query with a single cursor predicate when a cursor is provided and either no paginatedField is provided or the default paginated field is provided', () => { 
+  it('returns a query with a single cursor predicate with flipped sort operators when the non defauls sort direction is provided, a cursor is provided and either no paginatedField is provided or the default paginated field is provided', () => { 
     const optionA = {
       paginatedField: '_id',
       cursor: '5cdd2b7776ce1b8a0e379e46',
@@ -154,7 +154,7 @@ describe('database.utils.constructParams()', () => {
   })
 
   // verify sortDirection
-  it('returns a sort object with two predicates when a non default paginatedField is provided', () => {
+  it('returns a sort object with two predicates and flipped primary sort direction when a non default paginatedField is provided and the sort direction is flipped', () => {
     const options = {
       paginatedField: 'dummyField',
       sortDirection: 1
@@ -189,7 +189,7 @@ describe('database.utils.constructParams()', () => {
   })
 
   // verify sortDirection
-  it('returns a sort object with one predicate when either the default paginatedField is provided or none is provided', () => {
+  it('returns a sort object with one predicate and flipped sort direction when either the default paginatedField is provided or none is provided and the sort direction is flipped', () => {
     const optionsA = {
       paginatedField: '_id',
       sortDirection: 1

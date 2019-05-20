@@ -2,11 +2,9 @@ const { Document } = require('mushimas-models')
 const flatten = require('../flatten')
 const { ResourceError } = require('../errors')
 
-const { filterUpdates } = require('./utils')
+const { filterUpdates, getFlatDoc } = require('./utils')
 
 const PARENT_PATH = '@document'
-
-const getFlatDoc = args => flatten({ [PARENT_PATH]: args })
 
 module.exports = async ({environment, ackTime, args, session}) => {
   const { bucket, collection } = environment
