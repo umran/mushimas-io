@@ -2,9 +2,7 @@ const { Document } = require('mushimas-models')
 const flatten = require('../flatten')
 const { ResourceError } = require('../errors')
 
-const { filterUpdates, getFlatDoc } = require('./utils')
-
-const PARENT_PATH = '@document'
+const { filterUpdates, getFlatDraft } = require('./utils')
 
 module.exports = async ({environment, ackTime, args, session}) => {
   const { bucket, collection } = environment
@@ -26,9 +24,10 @@ module.exports = async ({environment, ackTime, args, session}) => {
 
   const document = await Document.findOneAndUpdate(matchCondition, {
     $set: {
-      ...getFlatDoc(updates),
+      ...getFlatDraft(updates),
       '@lastModified': ackTime,
-      '@lastCommitted': new Date()
+      '@lastCommitted': new Date(),
+      '@draftPublished': false
     },
     $inc: {
       '@version': 1

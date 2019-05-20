@@ -1,8 +1,6 @@
 const { Document } = require('mushimas-models')
 const { generateHash } = require('mushimas-crypto')
 
-const PARENT_PATH = '@document'
-
 module.exports = async ({environment, ackTime, args, session}) => {
   const { bucket, collection, idempotencyKey } = environment
 
@@ -29,7 +27,9 @@ module.exports = async ({environment, ackTime, args, session}) => {
   }
 
   const document = await Document.findOneAndUpdate(matchCondition, {
-    [PARENT_PATH]: args,
+    '@document': args,
+    '@draft': args,
+    '@draftPublished': true,
     '@state': 'PUBLISHED',
     '@lastModified': ackTime,
     '@lastCommitted': new Date(),

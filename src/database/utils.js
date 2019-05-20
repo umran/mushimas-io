@@ -2,6 +2,7 @@ const { Document } = require('mushimas-models')
 const flatten = require('../flatten')
 
 const PARENT_PATH = '@document'
+const DRAFT_PATH = '@draft'
 const DEFAULT_LIMIT = 20
 const DEFAULT_SORT_DIRECTION = -1
 const DEFAULT_PAGINATED_FIELD = '_id'
@@ -42,6 +43,7 @@ const filterUpdates = args => {
 const inferSortOperator = sortDirection => sortDirection === -1 ? '$lt' : '$gt'
 
 const getFlatDoc = args => flatten({ [PARENT_PATH]: args })
+const getFlatDraft = args => flatten({ [DRAFT_PATH]: args })
 
 const getFullPath = partial => partial === '_id' ? partial : PARENT_PATH.concat('.', partial)
 
@@ -159,6 +161,7 @@ module.exports = {
   formatResult,
   deriveArgs,
   getFlatDoc,
+  getFlatDraft,
   constructParams,
   getResults,
   filterUpdates
