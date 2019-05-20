@@ -154,6 +154,16 @@ describe('search.utils.createBody()', () => {
     expect(results.size).to.equal(expectedSize)
   })
 
+  it('returns no size object if the paginate value is false', () => {
+    const options = {
+      paginate: false
+    }
+
+    const results = createBody(query, options)
+
+    expect(results.size).to.equal(undefined)
+  })
+
   it('returns the default limit + 1 as the size if a limit is not provided', () => {
     const optionsA = {
       paginate: true
