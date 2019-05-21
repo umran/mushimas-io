@@ -1,7 +1,7 @@
 const { Document } = require('mushimas-models')
 const { generateHash } = require('mushimas-crypto')
 
-module.exports = async ({environment, ackTime, args, session}) => {
+module.exports = async ({ environment, args }) => {
   const { bucket, collection, idempotencyKey } = environment
 
   const initialHash = generateHash(JSON.stringify(args))
@@ -9,13 +9,6 @@ module.exports = async ({environment, ackTime, args, session}) => {
   let options = {
     upsert: true,
     new: true
-  }
-  
-  if (session) {
-    options = {
-      ...options,
-      session
-    }
   }
 
   const matchCondition = {
@@ -31,13 +24,11 @@ module.exports = async ({environment, ackTime, args, session}) => {
     '@draft': args,
     '@draftPublished': true,
     '@state': 'PUBLISHED',
-    '@lastModified': ackTime,
-    '@lastCommitted': new Date(),
+    '@lastModified': new Date(),
     '@collectionId': collection.id,
     '@bucketId': bucket.id,
     '@idempotencyKey': idempotencyKey,
-    '@initialHash': initialHash,
-    '@version': 0
+    '@initialHash': initialHash
   }, options)
 
   return document._id.toString()

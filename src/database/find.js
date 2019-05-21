@@ -1,6 +1,6 @@
 const { getFlatDoc, deriveArgs, constructParams, getResults } = require('./utils')
 
-module.exports = async ({environment, args}) => {
+module.exports = async ({ environment, args }) => {
   const { bucket, collection } = environment
   const { _options: options } = args
   let finalArgs = {

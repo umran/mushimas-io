@@ -4,16 +4,10 @@ const { ResourceError } = require('../errors')
 
 const { filterUpdates, getFlatDraft } = require('./utils')
 
-module.exports = async ({environment, ackTime, args, session}) => {
+module.exports = async ({ environment, args }) => {
   const { bucket, collection } = environment
   const { _id } = args
   const updates = filterUpdates(args)
-
-  let options
-
-  if (session) {
-    options = { session }
-  }
 
   const matchCondition = {
     _id,
@@ -25,14 +19,10 @@ module.exports = async ({environment, ackTime, args, session}) => {
   const document = await Document.findOneAndUpdate(matchCondition, {
     $set: {
       ...getFlatDraft(updates),
-      '@lastModified': ackTime,
-      '@lastCommitted': new Date(),
+      '@lastModified': new Date(),
       '@draftPublished': false
-    },
-    $inc: {
-      '@version': 1
     }
-  }, options)
+  })
 
   if (!document) {
     throw new ResourceError('notFound', 'the specified document could not be found')

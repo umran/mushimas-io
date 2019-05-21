@@ -1,6 +1,6 @@
 const { Document } = require('mushimas-models')
 
-module.exports = async ({environment, projection, _id, client}) => {
+module.exports = async ({ environment, projection, _id, client }) => {
   const { bucket, collection } = environment
   let doc = await Document.findOne({ _id, '@collectionId': collection.id, '@bucketId': bucket.id }).lean()
 

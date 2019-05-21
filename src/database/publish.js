@@ -1,15 +1,9 @@
 const { Document } = require('mushimas-models')
 const { ResourceError } = require('../errors')
 
-module.exports = async ({environment, ackTime, args, session}) => {
+module.exports = async ({ environment, args }) => {
   const { bucket, collection } = environment
   const { _id } = args
-
-  let options
-
-  if (session) {
-    options = { session }
-  }
 
   const matchCondition = {
     _id,
@@ -18,7 +12,7 @@ module.exports = async ({environment, ackTime, args, session}) => {
     '@bucketId': bucket.id
   }
 
-  // query database twice to get around inability to reference existing field vaulues within the update operation
+  // query database twice to get around inability to reference existing field vaulues within an atomic update operation
   let existingDoc = await Document.findOne(matchCondition, { '@draft': 1 }).lean()
 
   if (!existingDoc) {
@@ -30,13 +24,9 @@ module.exports = async ({environment, ackTime, args, session}) => {
       '@document': existingDoc['@draft'],
       '@draftPublished': true,
       '@state': 'PUBLISHED',
-      '@lastModified': ackTime,
-      '@lastCommitted': new Date()
-    },
-    $inc: {
-      '@version': 1
+      '@lastModified': new Date()
     }
-  }, options)
+  })
 
   if (!document) {
     throw new ResourceError('notFound', 'the specified document could not be found')
