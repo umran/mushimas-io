@@ -1,7 +1,7 @@
 const _findByIdList = require('../database/_findByIdList')
 const { createBody, hydrateResults } = require('./utils')
 
-module.exports = async ({environment, args, client}) => {
+module.exports = client => async ({ environment, args }) => {
   const { bucket, collection } = environment
   const { query, _options: options } = args
 
