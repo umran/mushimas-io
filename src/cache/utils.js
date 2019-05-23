@@ -30,9 +30,13 @@ const handleArray = arr => {
     .join()
 }
 
-exports.generateKey = ({collection, args, method}) => {
+const generateKey = (method, bucketId, collectionId, args) => {
   let material = handleObject(args)
   let hash = generateHash(material)
 
-  return `${method}${collection}${hash}`
+  return `${method}.${bucketId}.${collectionId}.${hash}`
+}
+
+module.exports = {
+  generateKey
 }

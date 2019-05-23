@@ -35,6 +35,6 @@
   },
   "dependencies": {
     "mushimas-crypto": "^0.0.3",
-    "mushimas-models": "^3.0.0"
+    "mushimas-models": "^4.0.0"
   }
 }
