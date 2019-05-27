@@ -37,6 +37,27 @@ const generateKey = (method, bucketId, collectionId, args) => {
   return `${method}.${bucketId}.${collectionId}.${hash}`
 }
 
+const getKeys = client => (method, bucketId, collectionId) => new Promise((resolve, reject) => {
+  let keys = []
+
+  const stream = client.scanStream({
+    match: `${method}.${bucketId}.${collectionId}.*`
+  })
+
+  stream.on('data', resultKeys => {
+    keys = keys.concat(resultKeys)
+  })
+
+  stream.on('end', () => {
+    resolve(keys)
+  })
+
+  stream.on('error', (err) => {
+    reject(err)
+  })
+})
+
 module.exports = {
-  generateKey
+  generateKey,
+  getKeys
 }
