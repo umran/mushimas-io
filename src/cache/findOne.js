@@ -7,5 +7,16 @@ module.exports = client => async ({ environment, args }) => {
 
   const key = generateKey(METHOD, bucket.id, collection.id, args)
 
-  return await client.get(key)
+  const results = await client.get(key)
+
+  if (results) {
+    return {
+      key,
+      results: JSON.parse(results)
+    }
+  }
+
+  return {
+    key
+  }
 }

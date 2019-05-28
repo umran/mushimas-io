@@ -141,9 +141,7 @@ const hydrateResults = async (environment, results, options={}) => {
 const extractDoc = (doc, projection) => {
   let systemFields = {
     '@state': doc['@state'],
-    '@version': doc['@version'],
-    '@lastModified': doc['@lastModified'],
-    '@lastCommitted': doc['@lastCommitted']
+    '@lastModified': doc['@lastModified']
   }
 
   return Object.keys(projection).reduce((result, field) => {

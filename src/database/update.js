@@ -28,5 +28,5 @@ module.exports = async ({ environment, args }) => {
     throw new ResourceError('notFound', 'the specified document could not be found')
   }
 
-  return _id
+  return document
 }

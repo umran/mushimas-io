@@ -13,5 +13,5 @@ module.exports = async ({ environment, args }) => {
     '@bucketId': bucket.id
   })
 
-  return document._id.toString()
+  return document
 }

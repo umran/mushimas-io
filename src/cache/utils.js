@@ -30,8 +30,8 @@ const handleArray = arr => {
     .join()
 }
 
-const generateKey = (method, bucketId, collectionId, args) => {
-  let material = handleObject(args)
+const generateKey = (method, bucketId, collectionId, query) => {
+  let material = handleObject(query)
   let hash = generateHash(material)
 
   return `${method}.${bucketId}.${collectionId}.${hash}`

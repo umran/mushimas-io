@@ -1,17 +1,15 @@
-const { Document } = require('mushimas-models')
-
 module.exports = client => async ({ environment, args }) => {
   const { bucket, collection } = environment
-  const { projection, _id } = args
+  const { projection, document } = args
   
-  let doc = await Document.findOne({ _id, '@collectionId': collection.id, '@bucketId': bucket.id }).lean()
+  const { _id } = document
 
   await client.update({
     index: `${bucket.id}_${collection.id}`,
     type: `${bucket.id}_${collection.id}`,
     id: _id,
     body: {
-      doc: extractDoc(doc, projection),
+      doc: extractDoc(document, projection),
       doc_as_upsert: true
     }
   })
