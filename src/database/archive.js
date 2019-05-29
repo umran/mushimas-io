@@ -3,7 +3,8 @@ const { ResourceError } = require('../errors')
 
 module.exports = async ({ environment, args }) => {
   const { bucket, collection } = environment
-  const { _id } = args
+  const { documentArgs } = args
+  const { _id } = documentArgs
 
   const matchCondition = {
     _id,
@@ -17,7 +18,7 @@ module.exports = async ({ environment, args }) => {
       '@state': 'ARCHIVED',
       '@lastModified': new Date()
     }
-  })
+  }, { new: true })
 
   if (!document) {
     throw new ResourceError('notFound', 'the specified document could not be found')

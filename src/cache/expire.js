@@ -10,6 +10,10 @@ module.exports = client => async ({ environment, args }) => {
       return await expireAllKeys(client)(environment, args)
     case 'delete':
       return await expireAllKeys(client)(environment, args)
+    case 'archive':
+      return await expireAllKeys(client)(environment, args)
+    case 'publish':
+      return await expireAllKeys(client)(environment, args)
   }
 }
 

@@ -6,8 +6,9 @@ const { filterUpdates, getFlatDraft } = require('./utils')
 
 module.exports = async ({ environment, args }) => {
   const { bucket, collection } = environment
-  const { _id } = args
-  const updates = filterUpdates(args)
+  const { documentArgs } = args
+  const { _id } = documentArgs
+  const updates = filterUpdates(documentArgs)
 
   const matchCondition = {
     _id,
@@ -22,7 +23,7 @@ module.exports = async ({ environment, args }) => {
       '@lastModified': new Date(),
       '@draftPublished': false
     }
-  })
+  }, { new: true })
 
   if (!document) {
     throw new ResourceError('notFound', 'the specified document could not be found')

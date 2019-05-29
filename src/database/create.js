@@ -3,9 +3,11 @@ const { Document } = require('mushimas-models')
 module.exports = async ({ environment, args }) => {
   const { bucket, collection } = environment
 
+  const { documentArgs } = args
+
   const document = await Document.create({
-    '@document': args,
-    '@draft': args,
+    '@document': documentArgs,
+    '@draft': documentArgs,
     '@draftPublished': true,
     '@state': 'PUBLISHED',
     '@lastModified': new Date(),
