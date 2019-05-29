@@ -1,3 +1,5 @@
+const { extractDoc } = require('./utils')
+
 module.exports = client => async ({ environment, args }) => {
   const { bucket, collection } = environment
   const { projection, document } = args
