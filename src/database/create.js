@@ -5,7 +5,7 @@ module.exports = async ({ environment, args }) => {
 
   const { documentArgs } = args
 
-  const document = await Document.create({
+  const [ document ] = await Document.create([{
     '@document': documentArgs,
     '@draft': documentArgs,
     '@draftPublished': true,
@@ -13,7 +13,7 @@ module.exports = async ({ environment, args }) => {
     '@lastModified': new Date(),
     '@collectionId': collection.id,
     '@bucketId': bucket.id
-  })
+  }], { lean: true })
 
   return document
 }

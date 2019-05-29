@@ -23,7 +23,7 @@ module.exports = async ({ environment, args }) => {
       '@lastModified': new Date(),
       '@draftPublished': false
     }
-  }, { new: true })
+  }, { new: true, lean: true })
 
   if (!document) {
     throw new ResourceError('notFound', 'the specified document could not be found')
