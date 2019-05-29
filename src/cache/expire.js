@@ -20,7 +20,7 @@ module.exports = client => async ({ environment, args }) => {
 const expireFindKeys = client => async (environment, args) => {
   const { collection, bucket } = environment
 
-  const findkeys = await getKeys(client)('find', bucket.id, collection.id)
+  const findKeys = await getKeys(client)('find', bucket.id, collection.id)
 
   const toExpire = findKeys.map(key => client.del(key))
   await Promise.all(toExpire)
@@ -30,7 +30,7 @@ const expireAllKeys = client => async (environment, args) => {
   const { collection, bucket } = environment
   const { _id } = args
 
-  const findOnekey = generateKey('findOne', bucket.id, collection.id, { _id })
+  const findOneKey = generateKey('findOne', bucket.id, collection.id, { _id })
 
   const findKeys = await getKeys(client)('find', bucket.id, collection.id)
 
