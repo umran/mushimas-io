@@ -5,6 +5,11 @@ const DEFAULT_PAGINATED_FIELD = '_score'
 const FALLBACK_PAGINATED_FIELD = '_id'
 const DEFAULT_MATCH_FIELDS = []
 const DEFAULT_PAGINATE_VALUE = true
+const STATE_FILTER = {
+  term: {
+    '@state': 'PUBLISHED'
+  }
+}
 
 const findIndex = (arr, lambda) => {
   for (var i = 0; i < arr.length; i++) {
@@ -57,9 +62,14 @@ const createBody = (query, options) => {
   if (!options) {
     return {
       query: {
-        query_string: {
-          query: query,
-          fields: DEFAULT_MATCH_FIELDS
+        bool: {
+          must: {
+            simple_query_string: {
+              query: query,
+              fields: DEFAULT_MATCH_FIELDS
+            }
+          },
+          filter: STATE_FILTER
         }
       },
       sort: inferSort(DEFAULT_PAGINATED_FIELD, DEFAULT_SORT_DIRECTION),
@@ -73,9 +83,14 @@ const createBody = (query, options) => {
   // construct body according to search options
   let body = {
     query: {
-      query_string: {
-        query: query,
-        fields: matchFields || DEFAULT_MATCH_FIELDS
+      bool: {
+        must: {
+          simple_query_string: {
+            query: query,
+            fields: DEFAULT_MATCH_FIELDS
+          }
+        },
+        filter: STATE_FILTER
       }
     },
     sort: inferSort(paginatedField || DEFAULT_PAGINATED_FIELD,

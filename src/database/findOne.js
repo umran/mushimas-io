@@ -8,7 +8,8 @@ module.exports = async ({ environment, args }) => {
   const finalArgs = {
     _id,
     '@collectionId': collection.id,
-    '@bucketId': bucket.id
+    '@bucketId': bucket.id,
+    '@state': 'PUBLISHED'
   }
 
   return formatResult(await Document.findOne(finalArgs).lean())

@@ -7,6 +7,7 @@ const DEFAULT_LIMIT = 20
 const DEFAULT_SORT_DIRECTION = -1
 const DEFAULT_PAGINATED_FIELD = '_id'
 const DEFAULT_PAGINATE_VALUE = true
+const STATE_FILTER = 'PUBLISHED'
 
 // committed methods
 const extractDoc = doc => {
@@ -76,11 +77,11 @@ const getCursor = (cursorElement, path) => {
 const constructParams = (args, options) => {
   if (!options) {
     return {
-      query: args,
+      query: { ...args, '@state': STATE_FILTER },
       sort: inferSort(DEFAULT_PAGINATED_FIELD, DEFAULT_SORT_DIRECTION),
       limit: DEFAULT_LIMIT,
       paginatedField: DEFAULT_PAGINATED_FIELD,
-      paginate: DEFAULT_PAGINATE_VALUE
+      paginate: DEFAULT_PAGINATE_VALUE,
     }
   }
 
@@ -97,7 +98,7 @@ const constructParams = (args, options) => {
     const [cursor_primary, cursor_secondary] = cursor.split('_')
 
     query = {
-      $and: [args, {
+      $and: [args, { '@state': STATE_FILTER }, {
         $or: [{
           [getFullPath(paginatedField)]: { [sortOperator]: cursor_primary }
         },
@@ -110,12 +111,12 @@ const constructParams = (args, options) => {
 
   } else if (cursor) {
     query = {
-      $and: [args, {
+      $and: [args, { '@state': STATE_FILTER }, {
         [getFullPath(DEFAULT_PAGINATED_FIELD)]: { [sortOperator]: cursor }
       }]
     }
   } else {
-    query = args
+    query = { ...args, '@state': STATE_FILTER }
   }
 
   return {

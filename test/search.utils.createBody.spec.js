@@ -9,6 +9,11 @@ const DEFAULT_PAGINATED_FIELD = '_score'
 const FALLBACK_PAGINATED_FIELD = '_id'
 const DEFAULT_MATCH_FIELDS = []
 const DEFAULT_PAGINATE_VALUE = true
+const STATE_FILTER = {
+  term: {
+    '@state': 'PUBLISHED'
+  }
+}
 
 const query = 'someQuery'
 
@@ -21,9 +26,14 @@ describe('search.utils.createBody()', () => {
     ]
     const expectedResults = {
       query: {
-        query_string: {
-          query: query,
-          fields: DEFAULT_MATCH_FIELDS
+        bool: {
+          must: {
+            simple_query_string: {
+              query: query,
+              fields: DEFAULT_MATCH_FIELDS
+            }
+          },
+          filter: STATE_FILTER
         }
       },
       sort: expectedSort,
