@@ -45,7 +45,7 @@ const lookupIds = async (environment, _ids) => {
   const docs = await _findByIdList(environment, { _id: { $in: _ids }, _options: { paginate: false } })
 
   let sorted = []
-  for (var i = 0; i < _ids.length; i++) {
+  for (let i = 0; i < _ids.length; i++) {
     let index = findIndex(docs.results, doc => {
       return (doc._id === _ids[i])
     })

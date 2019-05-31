@@ -1,3 +1,15 @@
+const DEFAULT_LIMIT = 20
+const MATCH_FIELDS = ['@document']
+const SORT = [
+  { '_score': 'desc' },
+  { '_id': 'desc' }
+]
+const STATE_FILTER = {
+  term: {
+    '@state': 'PUBLISHED'
+  }
+}
+
 const handleObject = obj => {
   return Object.keys(obj)
     .reduce((output, key) => {
@@ -43,6 +55,107 @@ const extractDoc = doc => ({
   '@document': getFullText(doc['@document'])
 })
 
+const createBody = (query, options) => {
+  if (!options) {
+    return {
+      query: {
+        bool: {
+          must: {
+            simple_query_string: {
+              query: query,
+              fields: MATCH_FIELDS
+            }
+          },
+          filter: STATE_FILTER
+        }
+      },
+      sort: SORT,
+      size: DEFAULT_LIMIT + 1
+    }
+  }
+
+  // destructure options
+  const { paginate, limit, cursor } = options
+
+  // construct body according to search options
+  let body = {
+    query: {
+      bool: {
+        must: {
+          simple_query_string: {
+            query: query,
+            fields: MATCH_FIELDS
+          }
+        },
+        filter: STATE_FILTER
+      }
+    },
+    sort: SORT
+  }
+  
+  if (cursor) {
+    body = {
+      ...body,
+      search_after: cursor.split('_')
+    }
+  }
+
+  if (paginate !== false) {
+    body = {
+      ...body,
+      size: (limit || DEFAULT_LIMIT) + 1
+    }
+  }
+
+  return body
+}
+
+const lookupIds = async (environment, _ids) => {
+
+  const docs = await _findByIdList(environment, { _id: { $in: _ids }, _options: { paginate: false } })
+
+  let sorted = []
+  for (let i = 0; i < _ids.length; i++) {
+    let index = findIndex(docs.results, doc => {
+      return (doc._id === _ids[i])
+    })
+
+    if (index !== null) {
+      sorted.push(docs.results[index])
+    }
+  }
+
+  return sorted
+}
+
+const hydrateResults = async (environment, results, options={}) => {
+  const { paginate, limit } = options
+  const _limit = limit || DEFAULT_LIMIT
+
+  if (!results.hits || !results.hits.hits || results.hits.hits.length === 0) {
+    return {
+      results: [],
+      cursor: null
+    }
+  }
+
+  let nextCursor
+  if (paginate !== false && results.hits.hits.length > _limit) {
+    results.hits.hits.pop()
+
+    const cursorElement = results.hits.hits[results.hits.hits.length - 1]
+    nextCursor = `${cursorElement['_score']}_${cursorElement[FALLBACK_PAGINATED_FIELD]}`
+  }
+
+  let hydrated = await lookupIds(environment, results.hits.hits.map(hit => hit._id))
+
+  return {
+    results: hydrated,
+    cursor: nextCursor
+  }
+}
+
 module.exports = {
-  extractDoc
+  extractDoc,
+  createBody
 }
