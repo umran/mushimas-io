@@ -7,6 +7,10 @@ module.exports = client => async ({ environment, args }) => {
   const { bucket, collection } = environment
   const { query, _options: options } = args
 
+  // debugging
+  const body = createBody(environment, query, options)
+  console.log(JSON.stringify(body))
+
   let results = await client.search({
     index: INDEX,
     type: INDEX,
