@@ -33,7 +33,7 @@ const getFullText = doc => {
   return handleObject(doc)
 }
 
-const extractDoc = (doc, projection) => ({
+const extractDoc = doc => ({
   '@collectionId': doc['@collectionId'],
   '@bucketId': doc['@bucketId'],
   '@state': doc['@state'],

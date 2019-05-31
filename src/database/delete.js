@@ -8,7 +8,6 @@ module.exports = async ({ environment, args }) => {
 
   const matchCondition = {
     _id,
-    '@state': { $ne: 'DELETED' },
     '@collectionId': collection.id,
     '@bucketId': bucket.id
   }
