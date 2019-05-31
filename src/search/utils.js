@@ -66,13 +66,15 @@ const createBody = (environment, query, options) => {
               fields: MATCH_FIELDS
             }
           },
-          filter: {
-            term: { '@bucketId': environment.bucket.id }
-          },
-          filter: {
-            term: { '@collectionId': environment.collection.id }
-          },
-          filter: STATE_FILTER
+          filter: [
+            {
+              term: { '@bucketId': environment.bucket.id }
+            },
+            {
+              term: { '@collectionId': environment.collection.id }
+            },
+            STATE_FILTER
+          ]
         }
       },
       sort: SORT,
@@ -93,13 +95,15 @@ const createBody = (environment, query, options) => {
             fields: MATCH_FIELDS
           }
         },
-        filter: {
-          term: { '@bucketId': environment.bucket.id }
-        },
-        filter: {
-          term: { '@collectionId': environment.collection.id }
-        },
-        filter: STATE_FILTER
+        filter: [
+          {
+            term: { '@bucketId': environment.bucket.id }
+          },
+          {
+            term: { '@collectionId': environment.collection.id }
+          },
+          STATE_FILTER
+        ]
       }
     },
     sort: SORT
