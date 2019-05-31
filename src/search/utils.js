@@ -170,7 +170,7 @@ const hydrateResults = async (environment, results, options={}) => {
     results.hits.hits.pop()
 
     const cursorElement = results.hits.hits[results.hits.hits.length - 1]
-    nextCursor = `${cursorElement['_score']}_${cursorElement[FALLBACK_PAGINATED_FIELD]}`
+    nextCursor = `${cursorElement['_score']}_${cursorElement['_id']}`
   }
 
   let hydrated = await lookupIds(environment, results.hits.hits.map(hit => hit._id))
