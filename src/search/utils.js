@@ -1,3 +1,5 @@
+const _findByIdList = require('../database/_findByIdList')
+
 const DEFAULT_LIMIT = 20
 const MATCH_FIELDS = ['@document']
 const SORT = [

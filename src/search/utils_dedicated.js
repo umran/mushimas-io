@@ -1,3 +1,5 @@
+const _findByIdList = require('../database/_findByIdList')
+
 const PARENT_PATH = '@document'
 const DEFAULT_LIMIT = 20
 const DEFAULT_SORT_DIRECTION = 'desc'
