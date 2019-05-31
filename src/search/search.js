@@ -10,7 +10,7 @@ module.exports = client => async ({ environment, args }) => {
   let results = await client.search({
     index: INDEX,
     type: INDEX,
-    body: createBody(query, options)
+    body: createBody(environment, query, options)
   })
 
   return await hydrateResults(environment, results, options)

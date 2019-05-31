@@ -7,9 +7,7 @@ const SORT = [
   { '_id': 'desc' }
 ]
 const STATE_FILTER = {
-  term: {
-    '@state': 'PUBLISHED'
-  }
+  term: { '@state': 'PUBLISHED' }
 }
 
 const handleObject = obj => {
@@ -57,7 +55,7 @@ const extractDoc = doc => ({
   '@document': getFullText(doc['@document'])
 })
 
-const createBody = (query, options) => {
+const createBody = (environment, query, options) => {
   if (!options) {
     return {
       query: {
@@ -68,7 +66,15 @@ const createBody = (query, options) => {
               fields: MATCH_FIELDS
             }
           },
-          filter: STATE_FILTER
+          filter: [
+            {
+              term: { '@bucketId': environment.bucket.id }
+            },
+            {
+              term: { '@collectionId': environment.collection.id }
+            },
+            STATE_FILTER
+          ]
         }
       },
       sort: SORT,
@@ -89,7 +95,16 @@ const createBody = (query, options) => {
             fields: MATCH_FIELDS
           }
         },
-        filter: STATE_FILTER
+        filter: [
+          {
+            term: { '@bucketId': environment.bucket.id }
+          },
+          {
+            term: { '@collectionId': environment.collection.id }
+          },
+          STATE_FILTER
+        ]
+        
       }
     },
     sort: SORT
