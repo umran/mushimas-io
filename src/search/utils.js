@@ -157,5 +157,6 @@ const hydrateResults = async (environment, results, options={}) => {
 
 module.exports = {
   extractDoc,
-  createBody
+  createBody,
+  hydrateResults
 }
