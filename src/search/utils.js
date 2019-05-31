@@ -10,6 +10,16 @@ const STATE_FILTER = {
   term: { '@state': 'PUBLISHED' }
 }
 
+const findIndex = (arr, lambda) => {
+  for (var i = 0; i < arr.length; i++) {
+    if (lambda(arr[i]) === true) {
+      return i
+    }
+  }
+
+  return null
+}
+
 const handleObject = obj => {
   return Object.keys(obj)
     .reduce((output, key) => {
