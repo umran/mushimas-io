@@ -1,4 +1,3 @@
-const _findByIdList = require('../database/_findByIdList')
 const { createBody, hydrateResults } = require('./utils_dedicated')
 
 module.exports = client => async ({ environment, args }) => {
