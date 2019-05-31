@@ -1,17 +1,18 @@
 const { extractDoc } = require('./utils')
 
+const INDEX = 'mushimas_document'
+
 module.exports = client => async ({ environment, args }) => {
-  const { bucket, collection } = environment
-  const { projection, document } = args
+  const { document } = args
   
   const { _id } = document
 
   await client.update({
-    index: `${bucket.id}_${collection.id}`,
-    type: `${bucket.id}_${collection.id}`,
+    index: INDEX,
+    type: INDEX,
     id: _id,
     body: {
-      doc: extractDoc(document, projection),
+      doc: extractDoc(document),
       doc_as_upsert: true
     }
   })

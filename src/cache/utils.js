@@ -7,6 +7,8 @@ const handleObject = obj => {
       if (typeof obj[key] === 'object' && obj[key] !== null) {
         if (Array.isArray(obj[key])) {
           output = output.concat(key).concat(handleArray(obj[key]))
+        } else if (Object.prototype.toString.call(obj[key]) === '[object Date]') {
+          output = output.concat(key).concat(obj[key].toISOString())
         } else {
           output = output.concat(key).concat(handleObject(obj[key]))
         }

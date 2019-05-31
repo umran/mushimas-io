@@ -1,5 +1,5 @@
 const expect = require('chai').expect
-const { createBody } = require('../src/search/utils')
+const { createBody } = require('../src/search/utils_dedicated')
 
 // declare constants
 const PARENT_PATH = '@document'
