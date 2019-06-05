@@ -98,11 +98,13 @@ describe('database.utils.getResults()', () => {
     const paginatedField = '_id'
     const paginate = true
 
+    const lastModified = new Date()
+
     // setup the mongoResult
     // set mongoResult to be two records
     const mongoResult = [
-      { _id: '54759eb3c090d83494e2d804', '@document': { dummyField: 'dummyValue' } },
-      { _id: '54759eb3c090d83494e2d803', '@document': { dummyField: 'dummyValue' } }
+      { _id: '54759eb3c090d83494e2d804', '@document': { dummyField: 'dummyValue' }, '@state': 'PUBLISHED', '@lastModified': lastModified, '@draftPublished': true },
+      { _id: '54759eb3c090d83494e2d803', '@document': { dummyField: 'dummyValue' }, '@state': 'PUBLISHED', '@lastModified': lastModified, '@draftPublished': true }
     ]
 
     // setup the mock
@@ -115,7 +117,7 @@ describe('database.utils.getResults()', () => {
 
     // setup the expected result
     const expectedResults = [
-      { _id: '54759eb3c090d83494e2d804', dummyField: 'dummyValue' }
+      { _id: '54759eb3c090d83494e2d804', dummyField: 'dummyValue', '@state': 'PUBLISHED', '@lastModified': lastModified, '@draftPublished': true }
     ]
     const expectedCursor = '54759eb3c090d83494e2d804'
 
@@ -145,11 +147,13 @@ describe('database.utils.getResults()', () => {
     const paginatedField = 'otherProperties.otherOrder'
     const paginate = true
 
+    const lastModified = new Date()
+
     // setup the mongoResult
     // set mongoResult to be two records
     const mongoResult = [
-      { _id: '54759eb3c090d83494e2d803', '@document': { dummyField: 'dummyValue', otherProperties: { otherOrder: 4 } } },
-      { _id: '54759eb3c090d83494e2d804', '@document': { dummyField: 'dummyValue', otherProperties: { otherOrder: 3 } } }
+      { _id: '54759eb3c090d83494e2d803', '@document': { dummyField: 'dummyValue', otherProperties: { otherOrder: 4 } }, '@state': 'PUBLISHED', '@lastModified': lastModified, '@draftPublished': true },
+      { _id: '54759eb3c090d83494e2d804', '@document': { dummyField: 'dummyValue', otherProperties: { otherOrder: 3 } }, '@state': 'PUBLISHED', '@lastModified': lastModified, '@draftPublished': true }
     ]
 
     // setup the mock
@@ -162,7 +166,7 @@ describe('database.utils.getResults()', () => {
 
     // setup the expected result
     const expectedResults = [
-      { _id: '54759eb3c090d83494e2d803', dummyField: 'dummyValue', otherProperties: { otherOrder: 4 } }
+      { _id: '54759eb3c090d83494e2d803', dummyField: 'dummyValue', otherProperties: { otherOrder: 4 }, '@state': 'PUBLISHED', '@lastModified': lastModified, '@draftPublished': true }
     ]
     const expectedCursor = '4_54759eb3c090d83494e2d803'
 
