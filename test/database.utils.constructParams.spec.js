@@ -7,7 +7,6 @@ const DEFAULT_LIMIT = 20
 const DEFAULT_SORT_DIRECTION = -1
 const DEFAULT_PAGINATED_FIELD = '_id'
 const DEFAULT_PAGINATE_VALUE = true
-const STATE_FILTER = 'PUBLISHED'
 
 const args = { '@document.dummyField': 'dummyValue' }
 
@@ -15,7 +14,7 @@ describe('database.utils.constructParams()', () => {
 
   it('returns the default parameters when no options are provided, ', () => {
     const expectedResults = {
-      query: { ...args, '@state': STATE_FILTER },
+      query: { ...args },
       sort: { _id: -1 },
       limit: DEFAULT_LIMIT,
       paginatedField: DEFAULT_PAGINATED_FIELD,
@@ -34,7 +33,7 @@ describe('database.utils.constructParams()', () => {
     }
 
     const expectedQuery = {
-      $and: [args, { '@state': STATE_FILTER }, {
+      $and: [args, {
         $or: [{
           ['@document.dummyField']: { $lt: 'dummyName' }
         },
@@ -59,7 +58,7 @@ describe('database.utils.constructParams()', () => {
     }
 
     const expectedQuery = {
-      $and: [args, { '@state': STATE_FILTER }, {
+      $and: [args, {
         $or: [{
           ['@document.dummyField']: { $gt: 'dummyName' }
         },
@@ -88,7 +87,7 @@ describe('database.utils.constructParams()', () => {
 
 
     const expectedQuery = {
-      $and: [args, { '@state': STATE_FILTER }, {
+      $and: [args, {
         ['_id']: { $lt: '5cdd2b7776ce1b8a0e379e46' }
       }]
     }
@@ -115,7 +114,7 @@ describe('database.utils.constructParams()', () => {
 
 
     const expectedQuery = {
-      $and: [args, { '@state': STATE_FILTER }, {
+      $and: [args, {
         ['_id']: { $gt: '5cdd2b7776ce1b8a0e379e46' }
       }]
     }
@@ -131,8 +130,7 @@ describe('database.utils.constructParams()', () => {
     const options = {}
 
     expectedQuery = {
-      ...args,
-      '@state': STATE_FILTER
+      ...args
     }
 
     const { query } = constructParams(args, options)
