@@ -7,7 +7,6 @@ const DEFAULT_LIMIT = 20
 const DEFAULT_SORT_DIRECTION = -1
 const DEFAULT_PAGINATED_FIELD = '_id'
 const DEFAULT_PAGINATE_VALUE = true
-const STATE_FILTER = 'PUBLISHED'
 
 // committed methods
 const extractDoc = doc => {
@@ -17,11 +16,29 @@ const extractDoc = doc => {
   }
 }
 
-const formatResult = (result) => {
+const extractDraft = doc => {
+  return {
+    ...doc['@draft'],
+    _id: doc._id.toString(),
+    '@state': doc['@state'],
+    '@draftPublished': doc['@draftPublished'],
+    '@lastModified': doc['@lastModified']
+  }
+}
+
+const formatResult = result => {
   if (Array.isArray(result)) {
     return result.map(res => extractDoc(res))
   } else if (result) {
     return extractDoc(result)
+  }
+}
+
+const formatDraftResult = result => {
+  if (Array.isArray(result)) {
+    return result.map(res => extractDraft(res))
+  } else if (result) {
+    return extractDraft(result)
   }
 }
 
@@ -41,12 +58,13 @@ const filterUpdates = args => {
 }
 
 // new methods
-const inferSortOperator = sortDirection => sortDirection === -1 ? '$lt' : '$gt'
-
 const getFlatDoc = args => flatten({ [PARENT_PATH]: args })
+
 const getFlatDraft = args => flatten({ [DRAFT_PATH]: args })
 
 const getFullPath = partial => partial === '_id' ? partial : PARENT_PATH.concat('.', partial)
+
+const inferSortOperator = sortDirection => sortDirection === -1 ? '$lt' : '$gt'
 
 const inferSort = (field, direction) => {
   let result = {
@@ -57,6 +75,23 @@ const inferSort = (field, direction) => {
     result = {
       ...result,
       [getFullPath(DEFAULT_PAGINATED_FIELD)]: DEFAULT_SORT_DIRECTION
+    }
+  }
+
+  return result
+}
+
+const getFullDraftPath = partial => partial === '_id' ? partial : '@draft'.concat('.', partial)
+
+const inferDraftSort = (field, direction) => {
+  let result = {
+    [getFullDraftPath(field)]: direction
+  }
+
+  if (field !== DEFAULT_PAGINATED_FIELD) {
+    result = {
+      ...result,
+      [getFullDraftPath(DEFAULT_PAGINATED_FIELD)]: DEFAULT_SORT_DIRECTION
     }
   }
 
@@ -74,11 +109,14 @@ const getCursor = (cursorElement, path) => {
   return nextLevel
 }
 
-const constructParams = (args, options) => {
+const constructParams = (args, options, draft=false) => {
+  let actualGetFullPath = draft === true ? getFullDraftPath : getFullPath
+  let actualInferSort = draft === true ? inferDraftSort : inferSort
+
   if (!options) {
     return {
-      query: { ...args, '@state': STATE_FILTER },
-      sort: inferSort(DEFAULT_PAGINATED_FIELD, DEFAULT_SORT_DIRECTION),
+      query: { ...args },
+      sort: actualInferSort(DEFAULT_PAGINATED_FIELD, DEFAULT_SORT_DIRECTION),
       limit: DEFAULT_LIMIT,
       paginatedField: DEFAULT_PAGINATED_FIELD,
       paginate: DEFAULT_PAGINATE_VALUE,
@@ -98,30 +136,30 @@ const constructParams = (args, options) => {
     const [cursor_primary, cursor_secondary] = cursor.split('_')
 
     query = {
-      $and: [args, { '@state': STATE_FILTER }, {
+      $and: [args, {
         $or: [{
-          [getFullPath(paginatedField)]: { [sortOperator]: cursor_primary }
+          [actualGetFullPath(paginatedField)]: { [sortOperator]: cursor_primary }
         },
         {
-          [getFullPath(paginatedField)]: cursor_primary,
-          [getFullPath(DEFAULT_PAGINATED_FIELD)]: { [inferSortOperator(DEFAULT_SORT_DIRECTION)]: cursor_secondary }
+          [actualGetFullPath(paginatedField)]: cursor_primary,
+          [actualGetFullPath(DEFAULT_PAGINATED_FIELD)]: { [inferSortOperator(DEFAULT_SORT_DIRECTION)]: cursor_secondary }
         }]
       }]
     }
 
   } else if (cursor) {
     query = {
-      $and: [args, { '@state': STATE_FILTER }, {
-        [getFullPath(DEFAULT_PAGINATED_FIELD)]: { [sortOperator]: cursor }
+      $and: [args, {
+        [actualGetFullPath(DEFAULT_PAGINATED_FIELD)]: { [sortOperator]: cursor }
       }]
     }
   } else {
-    query = { ...args, '@state': STATE_FILTER }
+    query = { ...args }
   }
 
   return {
     query,
-    sort: inferSort(paginatedField || DEFAULT_PAGINATED_FIELD,
+    sort: actualInferSort(paginatedField || DEFAULT_PAGINATED_FIELD,
       sortDirection || DEFAULT_SORT_DIRECTION),
     limit: limit || DEFAULT_LIMIT,
     paginatedField: paginatedField || DEFAULT_PAGINATED_FIELD,
@@ -129,13 +167,15 @@ const constructParams = (args, options) => {
   }
 }
 
-const getResults = async (query, sort, limit, paginatedField, paginate) => {
+const getResults = async (query, sort, limit, paginatedField, paginate, draft=false) => {
   let results
+
+  let format = draft === true ? formatDraftResult : formatResult
   
   if (paginate === true) {
-    results = formatResult(await Document.find(query).sort(sort).limit(limit + 1).lean())
+    results = format(await Document.find(query).sort(sort).limit(limit + 1).lean())
   } else {
-    results = formatResult(await Document.find(query).sort(sort).lean())
+    results = format(await Document.find(query).sort(sort).lean())
   }
 
   let nextCursor
@@ -160,6 +200,7 @@ const getResults = async (query, sort, limit, paginatedField, paginate) => {
 
 module.exports = {
   formatResult,
+  formatDraftResult,
   deriveArgs,
   getFlatDoc,
   getFlatDraft,

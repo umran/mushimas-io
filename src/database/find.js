@@ -6,7 +6,8 @@ module.exports = async ({ environment, args }) => {
   let finalArgs = {
     ...getFlatDoc(deriveArgs(args, false)),
     '@collectionId': collection.id,
-    '@bucketId': bucket.id
+    '@bucketId': bucket.id,
+    '@state': 'PUBLISHED'
   }
 
   finalArgs = args._id ? { ...finalArgs, _id: args._id } : finalArgs
