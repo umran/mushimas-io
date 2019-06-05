@@ -12,7 +12,10 @@ const DEFAULT_PAGINATE_VALUE = true
 const extractDoc = doc => {
   return {
     ...doc[PARENT_PATH],
-    _id: doc._id.toString()
+    _id: doc._id.toString(),
+    '@state': doc['@state'],
+    '@draftPublished': doc['@draftPublished'],
+    '@lastModified': doc['@lastModified']
   }
 }
 
