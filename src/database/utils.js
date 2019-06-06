@@ -13,9 +13,9 @@ const extractDoc = doc => {
   return {
     ...doc[PARENT_PATH],
     _id: doc._id.toString(),
-    '@state': doc['@state'],
-    '@draftPublished': doc['@draftPublished'],
-    '@lastModified': doc['@lastModified']
+    _state: doc['@state'],
+    _draftPublished: doc['@draftPublished'],
+    _lastModified: doc['@lastModified']
   }
 }
 
@@ -23,9 +23,9 @@ const extractDraft = doc => {
   return {
     ...doc['@draft'],
     _id: doc._id.toString(),
-    '@state': doc['@state'],
-    '@draftPublished': doc['@draftPublished'],
-    '@lastModified': doc['@lastModified']
+    _state: doc['@state'],
+    _draftPublished: doc['@draftPublished'],
+    _lastModified: doc['@lastModified']
   }
 }
 
