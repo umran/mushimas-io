@@ -5,5 +5,5 @@ cache:
   directories:
     - "node_modules"
 before_install:
-  - "npm install mongoose@^5.5.7"
+  - "npm install mongoose@^5.5.7 mushimas-models@^4.1.0"
 after_success: npm run coveralls
