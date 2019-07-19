@@ -34,7 +34,9 @@
     "sinon-mongoose": "^2.3.0"
   },
   "dependencies": {
-    "mushimas-crypto": "^0.0.3",
+    "mushimas-crypto": "^0.0.3"
+  },
+  "peerDependencies": {
     "mushimas-models": "^4.1.0"
   }
 }
